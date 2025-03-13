@@ -534,7 +534,7 @@ class RamanCalculation:
         specifying the `rot` keyword is invalid and will raise an error.
         """
 
-        if "rot" in kwargs:
+        if "rot" in kwargs and kwargs["rot"] is not None:
             raise ValueError(
                 "The rot keyword to single_crystal is not valid for a "
                 "crystal-rotation experiment - specify the required "
@@ -712,7 +712,7 @@ class RamanCalculation:
         s_pol,
         chi_start=0.0,
         chi_end=360.0,
-        chi_step=2.5,
+        chi_step=None,
         **kwargs
     ):
         """Simulate a powder polarisation (chi) rotation measurement
@@ -728,9 +728,12 @@ class RamanCalculation:
             polarisation to be rotated can be specified by 'rot'. The
             scattered polarisation may also be specified by one of
             {'parallel', 'cross', 'sum'}.
-        chi_start, chi_end, chi_step : float, optional
-            Start/end angle and angle step for polarisation rotation in
-            degrees (defaults: 0 -> 360 deg in 2.5 deg steps).
+        chi_start, chi_end : float, optional
+            Start/end angle for polarisation rotation in degrees
+            (defaults: 0 -> 360 deg).
+        chi_step : float or None, optional
+            Angle step for polarisation rotation in degrees (defaults:
+            2.5 deg, or 22.5 deg with preferred orientation).
         **kwargs : any
             Optional arguments to `powder`.
 
@@ -747,6 +750,12 @@ class RamanCalculation:
         -----
         See `powder` for optional keyword arguments.
         """
+
+        if chi_step is None:
+            chi_step = 2.5
+
+            if "pref_orient_eta" in kwargs and kwargs["pref_orient_eta"] > 0.0:
+                chi_step = 22.5
 
         i_pol_str = str(i_pol).lower()
         s_pol_str = str(s_pol).lower()
