@@ -177,7 +177,7 @@ def df_to_txt(df, file_path, col_fmts, preamble_lines=None):
             f.write("  " + "  ".join(row) + "\n")
 
 
-def raman_peak_table_to_txt(df, x_units, y_units, file_path):
+def peak_table_to_txt(df, x_units, y_units, file_path):
     """Write a peak table produced by one of the `Spectrum` classes
     to a plain-text file.
 
@@ -195,7 +195,7 @@ def raman_peak_table_to_txt(df, x_units, y_units, file_path):
     df_to_txt(df, file_path, col_fmts, preamble_lines=[x_units, y_units])
 
 
-def raman_spectrum_to_txt(df, x_units, y_units, file_path):
+def spectrum_to_txt(df, x_units, y_units, file_path):
     """Write a spectrum produced by one of the `Spectrum` classes
     to a plain-text file.
 

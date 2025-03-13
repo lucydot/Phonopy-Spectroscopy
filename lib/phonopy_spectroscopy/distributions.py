@@ -114,9 +114,9 @@ def phonon_occupation_number(nu, t):
         Phonon occupation number(s) (same shape as `nu`).
     """
 
-    f, n_dim_add = np_expand_dims(np.asarray(f), (None,))
+    nu, n_dim_add = np_expand_dims(np.asarray(nu), (None,))
 
-    e = PLANCK_CONSTANT_EV * 1.0e12 * f
+    e = PLANCK_CONSTANT_EV * 1.0e12 * nu
     n = 1.0 / (np.exp(e / (BOLTZMANN_CONSTANT_EV * t)) - 1.0)
 
     return n if n_dim_add == 0 else n[0]
