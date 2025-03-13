@@ -49,7 +49,7 @@ If you use Phonopy-Spectroscopy in your work, please consider citing this paper 
 
 ## References
 
-1. <a name="Ref1"></a>[https://atztogo.github.io/phonopy](https://atztogo.github.io/phonopy)
+1. <a name="Ref1"></a>[https://github.com/phonopy/phonopy](https://github.com/phonopy/phonopy)
 2. <a name="Ref2"></a>[https://www.numpy.org](https://www.numpy.org)
 3. <a name="Ref3"></a>[https://scipy.org](https://scipy.org)
 4. <a name="Ref4"></a>[https://pandas.pydata.org](https://pandas.pydata.org)
