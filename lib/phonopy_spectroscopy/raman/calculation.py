@@ -492,8 +492,8 @@ class RamanCalculation:
                 ints[i] = calculate_single_crystal_raman_intensities(
                     params["raman_tensors"],
                     params["geometry"],
-                    i_pol,
-                    s_pol,
+                    params["incident_polarisations"][0],
+                    params["scattered_polarisations"][0],
                     r,
                 )
 
