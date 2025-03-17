@@ -82,6 +82,7 @@ class TestRamanSimulation(unittest.TestCase):
             os.path.join(_EXAMPLE_BASE_DIR, r"mesh.hdf5"),
             lws_file=os.path.join(_EXAMPLE_BASE_DIR, r"kappa-m646464-g0.hdf5"),
             irreps_file=os.path.join(_EXAMPLE_BASE_DIR, r"irreps.yaml"),
+            prim_trans=[[0.0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]],
         )
 
         # Construct a FiniteDisplacementRamanTensorCalculator object
@@ -168,7 +169,7 @@ class TestRamanSimulation(unittest.TestCase):
             )
 
             ints[:, i] = calculate_single_crystal_raman_intensities(
-                self._model_r_t, self._geom, pol, pol, rot=np.dot(r_hkl, r)
+                self._model_r_t, self._geom, pol, pol, rot=np.dot(r, r_hkl)
             )
 
         ints = ints.sum(axis=0)

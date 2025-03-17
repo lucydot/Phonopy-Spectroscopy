@@ -55,6 +55,7 @@ def gamma_phonons_from_phono3py(
     lws_file=None,
     lws_t=300.0,
     irreps_file=None,
+    prim_trans=None,
 ):
     """Read a complete Phono(3)py calculation and return a
     `GammaPhonons` object.
@@ -73,6 +74,9 @@ def gamma_phonons_from_phono3py(
         Temperature to read linewidths at (default: 300 K)
     irreps_file : str, optional
         irreps.yaml file to read irreps from (default: `None`).
+    prim_trans : array_like, optional
+        Primitive transformation matrix to obtain the structure from
+        a conventional cell (shape: `(3, 3)`, default: `None`).
 
     Returns
     -------
@@ -92,6 +96,18 @@ def gamma_phonons_from_phono3py(
         struct = structure_from_phonopy_yaml(cell_file)
     else:
         struct = structure_from_poscar(cell_file)
+
+    # If a primitive transformation matrix is specified, create a new
+    # structure with the prim_trans keyword set.
+
+    if prim_trans is not None:
+        struct = Structure(
+            struct.lattice_vectors,
+            struct.atom_positions,
+            struct.atom_types,
+            struct.atomic_masses,
+            prim_trans=prim_trans,
+        )
 
     # Read a set of frequencies/eigenvectors. If freqs_evecs_file has a
     # .yaml extension, assume it is a mesh.yaml/band.yaml file. If the

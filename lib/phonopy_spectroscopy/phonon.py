@@ -212,16 +212,15 @@ class GammaPhonons:
             Python types.
         """
 
+        lws = self._lws.tolist() if self._lws is not None else None
+        irreps = self._irreps.to_dict() if self._irreps is not None else None
+
         return {
             "structure": self._struct.to_dict(),
             "frequencies": self._freqs.tolist(),
             "eigenvectors": self._evecs.tolist(),
-            "linewidths": (
-                self._lws.tolist() if self._lws is not None else None
-            ),
-            "irreps": (
-                self._irreps.to_dict() if self._irreps is not None else None
-            ),
+            "linewidths": lws,
+            "irreps": irreps,
         }
 
     @staticmethod
@@ -240,10 +239,15 @@ class GammaPhonons:
             `GammaPhonons` object constructed from the data in `d`.
         """
 
+        irreps = None
+
+        if d["irreps"] is not None:
+            irreps = Irreps.from_dict(d["irreps"])
+
         return GammaPhonons(
             Structure.from_dict(d["structure"]),
             d["frequencies"],
             d["eigenvectors"],
             lws=d["linewidths"],
-            irreps=Irreps.from_dict(d["irreps"]),
+            irreps=irreps,
         )
