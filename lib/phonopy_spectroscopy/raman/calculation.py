@@ -450,7 +450,9 @@ class RamanCalculation:
             temp = np.zeros_like(rot)
 
             for i, r_2 in enumerate(rot):
-                temp[i] = np.dot(r, r_2)
+                temp[i] = np.dot(r_2, r)
+
+            rot = temp
         else:
             rot = np.reshape(r, (1, 3, 3))
 
