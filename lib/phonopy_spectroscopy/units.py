@@ -93,13 +93,13 @@ def get_distance_unit_conversion_factor(unit_from, unit_to):
 
 _FREQUENCY_UNIT_DATA = {
     "thz": {
-        "text_label": "Frequency / THz",
+        "text_label": "v / THz",
         "plot_label": r"$\nu$ / THz",
         "from_thz": 1.0,
         "to_thz": 1.0,
     },
     "inv_cm": {
-        "text_label": "Wavenumber / cm^-1",
+        "text_label": "v / cm^-1",
         "plot_label": r"$\bar{\nu}$ / cm$^{-1}$",
         "from_thz": THZ_TO_INV_CM,
         "to_thz": 1.0 / THZ_TO_INV_CM,

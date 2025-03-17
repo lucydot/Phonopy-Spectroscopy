@@ -136,8 +136,8 @@ class SpectrumBase:
         x_res : float or None, optional
             Resolution of x-axis in `x_units` (`None`).
         x : array_like or None, optional
-            x-axis values in `x_units` (overrides `x_range` and `x_res`,
-            default: `None`).
+            x-axis values in `x_units` (shape: `(O,)`; overrides
+            `x_range` and `x_res`; default: `None`).
         x_units : str or None, optional
             x-axis units of the simulated spectrum (default: `None`).
 
@@ -185,7 +185,8 @@ class SpectrumBase:
 
     @property
     def x(self):
-        """numpy.ndarray : x values for simulated spectrum."""
+        """numpy.ndarray : x values for simulated spectrum (shape:
+        `(O,)`)."""
         return np_readonly_view(self._x)
 
     @property
@@ -224,7 +225,6 @@ class GammaPhononSpectrumBase(SpectrumBase):
         irrep_syms=None,
         x_range=None,
         x_res=None,
-        x=None,
         x_units="thz",
     ):
         """Create a new instance of the SpectrumBase class.
@@ -232,9 +232,11 @@ class GammaPhononSpectrumBase(SpectrumBase):
         Parameters
         ----------
         freqs : array_like
-            Frequencies in THz.
+            Frequencies in THz (shape: `(N,)`).
+        ints : array_like
+            Band intensities in Ang^4 / sqrt(amu) (shape: `(N,)`).
         lws : array_like
-            Linewidths in THz.
+            Linewidths in THz (shape: `(N,)`).
         irrep_syms : array_like or None, optional
             Irrep symbols of modes.
         x_range : tuple of float or None
@@ -284,11 +286,10 @@ class GammaPhononSpectrumBase(SpectrumBase):
             freqs = convert_frequency_units(freqs, "thz", x_units)
             lws = convert_frequency_units(lws, "thz", x_units)
 
-        if x_range is None:
-            # auto_x will do nothing if x_range and x_res are already
-            # specified.
+        # auto_x will do nothing if x_range and x_res are already
+        # specified.
 
-            x_range, x_res = auto_x(freqs, lws, x_range=x_range, x_res=x_res)
+        x_range, x_res = auto_x(freqs, lws, x_range=x_range, x_res=x_res)
 
         self._freqs = freqs
         self._lws = lws
@@ -296,20 +297,20 @@ class GammaPhononSpectrumBase(SpectrumBase):
         self._irrep_syms = irrep_syms
 
         super(GammaPhononSpectrumBase, self).__init__(
-            x_range=x_range, x_res=x_res, x=x, x_units=x_units
+            x_range=x_range, x_res=x_res, x_units=x_units
         )
 
     @property
     def frequencies(self):
-        """numpy.ndarray : Phonon frequencies."""
+        """numpy.ndarray : Phonon frequencies (shape: `(N,)`)."""
         return np_readonly_view(self._freqs)
 
     @property
     def linewidths(self):
-        """numpy.ndarray : Phonon linewidths."""
+        """numpy.ndarray : Phonon linewidths (shape: `(N,)`)."""
         return np_readonly_view(self._lws)
 
     @property
     def irrep_symbols(self):
-        """numpy.ndarray : Mode irrep symbols."""
+        """numpy.ndarray : Mode irrep symbols (shape: `(N,)`)."""
         return np_readonly_view(self._irrep_syms)

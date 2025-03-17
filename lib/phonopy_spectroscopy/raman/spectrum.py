@@ -6,7 +6,7 @@
 # ---------
 
 
-"""Class and associated routines for simulating Raman spectra."""
+"""Classes and routines for simulating Raman spectra."""
 
 
 # -------
@@ -204,14 +204,14 @@ def modulate_intensities(freqs, ints, w=None, t=None):
     return ints if n_dim_add == 0 else ints.reshape((-1,))
 
 
-# -------------------
-# RamanSpectrum class
-# -------------------
+# -----------------------
+# RamanSpectrumBase class
+# -----------------------
 
 
-class RamanSpectrum(GammaPhononSpectrumBase):
-    """Simulate 1D or 2D Raman spectra (e.g. for an angle rotation) from
-    sets of frequencies, band intensities and linewidths."""
+class RamanSpectrumBase(GammaPhononSpectrumBase):
+    """Base class for generating simulated Raman spectra from sets of
+    frequencies, band intensities and linewidths."""
 
     def __init__(
         self,
@@ -222,40 +222,45 @@ class RamanSpectrum(GammaPhononSpectrumBase):
         w=None,
         t=None,
         spectrum_type="stokes",
-        x_range=None,
-        x_res=None,
-        x_units="thz",
+        **kwargs
     ):
         r"""Create a new instance of the `RamanSpectrum` class.
 
         Parameters
         ----------
         freqs : array_like
-            List of frequencies in THz.
+            Frequencies in THz (shape: `(N,)`).
         ints : array_like
-            List of `N` scalar Raman band intensities, or 2D array of
-            `N` intensities for `M` calculations (shape: `(N`,)` or
-            `(N, M)`). Units are Ang^4 / sqrt(amu).
+            Band intensities in Ang^4 / sqrt(amu) (shape: `(N,)` for 1D
+            spectra, or `(N, M)` for 2D spectra).
         lws : array_like
-            List of linewidths in THz.
-        irreps : Irreps or None
-            An Irreps object assigning bands to irrep groups.
-        w : float or None
-            Measurement wavelength in nm to calculate scattered photon
-            energies for band intensity modulation envelope (default:
-            None).
-        t : float or None
+            Linewidths in THz (shape: `(N,)`).
+        irreps : Irreps or None, optional
+            `Irreps` object assigning bands to irrep groups.
+        w : float or None, optional
+            Measurement wavelength in nm to calculate intensity
+            modulation envelope (default: None).
+        t : float or None, optional
             Temperature in K to calculate phonon occupation numbers for
-            band intensity modulation envelope (default: None)
-        x_range : tuple of float or None
-            Range of spectrum as a `(min, max)` tuple or `None` to
-            automatically determine a suitable range (default: `None`).
-        x_res : float or None
-            Resolution of spectrum (default: automatically determined).
+            intensity modulation envelope (default: None)
         spectrum_type : {'stokes', 'anti-stokes', 'both'}
             Type of spectrum (default: 'stokes').
-        x_units : str
-            Frequency units of spectrum (default: 'thz').
+        **kwargs : any, optional
+            Keyword arguments to the `GammaPhononSpectrumBase`
+            constructor.
+
+        See Also
+        --------
+        spectrum.GammaPhononSpectrumBase
+            Base class for `RamanSpectrum`.
+
+        Notes
+        -----
+        During initialisation, if irreps are supplied the
+        frequencies/linewidths and intensities of degenerate bands are
+        averaged and summed, respectively, so the outer dimensions of
+        properties (`N`) may differ from those supplied to the
+        constructor.
         """
 
         freqs = np_asarray_copy(freqs, dtype=np.float64)
@@ -266,10 +271,6 @@ class RamanSpectrum(GammaPhononSpectrumBase):
         ints, n_dim_add = np_expand_dims(
             np_asarray_copy(ints, dtype=np.float64), (len(freqs), None)
         )
-
-        # Keep track of dimensionality of ints for returning results.
-
-        ints_2d = n_dim_add == 0
 
         lws = np_asarray_copy(lws, dtype=np.float64)
 
@@ -333,50 +334,44 @@ class RamanSpectrum(GammaPhononSpectrumBase):
         # intialisation. This also validates freqs, lws and irreps, and
         # the optional x_range, x_res and units parameters.
 
-        super(RamanSpectrum, self).__init__(
-            freqs,
-            lws,
-            irrep_syms=irrep_syms,
-            x_range=x_range,
-            x_res=x_res,
-            x_units=x_units,
+        super(RamanSpectrumBase, self).__init__(
+            freqs, lws, irrep_syms=irrep_syms, **kwargs
         )
 
-        # Store remaining parameters.
+        # Store additional parameters.
 
         self._ints = ints
-        self._ints_2d = ints_2d
 
         self._w = w
         self._t = t
 
         self._spectrum_type = spectrum_type
 
-        # Set _y to default value.
+        # Set _sp to default value.
 
-        self._y = None
+        self._sp = None
 
-    def _lazy_init_y(self):
-        """Simulate spectrum on first call to `y` or `spectrum()`."""
+    def _lazy_init_spectrum(self):
+        """Simulate spectrum on first call to `y`, `z` or `spectrum()`."""
 
-        if self._y is None:
+        if self._sp is None:
             x = self.x
 
             _, num_sp = self._ints.shape
 
-            y = np.zeros((len(x), num_sp), dtype=np.float64)
+            sp = np.zeros((len(x), num_sp), dtype=np.float64)
 
             for sp_idx in range(self._ints.shape[1]):
                 for f, i, lw in zip(
                     self._freqs, self._ints[:, sp_idx], self._lws
                 ):
-                    y[:, sp_idx] += lorentzian(x, i, f, lw)
+                    sp[:, sp_idx] += lorentzian(x, i, f, lw)
 
-            self._y = y
+            self._sp = sp
 
     @property
     def frequencies(self):
-        """numpy.ndarray : Phonon frequencies."""
+        """numpy.ndarray : Phonon frequencies (shape: `(N,)`)."""
         # If the spectrum includes anti-Stokes branches, the frequencies
         # are actually Raman shifts and may include negative values. To
         # avoid confusion, we hide the base class property and intercept
@@ -393,19 +388,12 @@ class RamanSpectrum(GammaPhononSpectrumBase):
                 RuntimeWarning,
             )
 
-        return super(RamanSpectrum, self).frequencies
+        return super(RamanSpectrumBase, self).frequencies
 
     @property
     def raman_shifts(self):
-        """numpy.ndarray : Raman shifts."""
-        return super(RamanSpectrum, self).frequencies
-
-    @property
-    def intensities(self):
-        """numpy.ndarray : Band intensities."""
-        return np_readonly_view(
-            self._ints if self._ints_2d else self._ints.reshape((-1,))
-        )
+        """numpy.ndarray : Raman shifts (shape: `(N,)`)."""
+        return super(RamanSpectrumBase, self).frequencies
 
     @property
     def spectrum_type(self):
@@ -423,23 +411,8 @@ class RamanSpectrum(GammaPhononSpectrumBase):
         return self._t
 
     @property
-    def is_2d_spectrum(self):
-        """bool : `True` if the spectrum is 2D, otherwise `False`."""
-        return self._ints_2d
-
-    @property
-    def y(self):
-        """array_like : y values for simulated spectrum."""
-
-        self._lazy_init_y()
-
-        return np_readonly_view(
-            self._y if self._ints_2d else self._y.reshape((-1,))
-        )
-
-    @property
-    def y_unit_text_label(self):
-        """str : y-axis label suitable for plain-text output."""
+    def _intensity_unit_text_label(self):
+        """str : Intensity unit label suitable for plain-text output."""
 
         # If a measurement wavelength was set, the intensities are
         # converted to differential cross sections. If not, the
@@ -452,12 +425,11 @@ class RamanSpectrum(GammaPhononSpectrumBase):
         )
 
     @property
-    def y_unit_plot_label(self):
-        """str: y-axis label suitable for plotting (contains TeX
-        strings.)
-        """
+    def _intensity_unit_plot_label(self):
+        """str : Intensity unit label suitable for plotting (may contain
+        TeX strings)."""
 
-        # (See comment on y_unit_text_label.)
+        # (See comment on _intensity_unit_text_label.)
 
         return (
             r"$d \sigma / d \Omega$ / ($\mathrm{\AA}^2$ sterad$^{-1}$)"
@@ -465,55 +437,28 @@ class RamanSpectrum(GammaPhononSpectrumBase):
             else r"$I^\mathrm{Raman}$ / ($\mathrm{AA}^4$ amu$^{-1}$)"
         )
 
-    def _get_int_col_hdrs(self, int_col_hdrs=None):
-        """Get column headers for the intensity columns in peak tables
-        and simulated spectra in Pandas `DataFrame` objects.
-
-        Parameters
-        ----------
-        int_col_hdrs : array_like or None, optional
-            Column header(s).
+    def _get_data_frame_column_headers(self):
+        """Return a set of column headers for the `pandas.DataFrame`
+        objects created by `peak_table()` and `spectrum()`.
 
         Returns
         -------
-        int_col_hdrs : array_like
-            Column header(s) if `int_col_hdrs` is specified, otherwise
-            a default set of headers depending on the type of
-            intensities calculated.
+        col_hdrs : list of str
+            Column headers.
         """
 
-        num_hdrs = self._ints.shape[1]
+        hdr_base = "cross_sect" if self._w is not None else "int"
 
-        if int_col_hdrs is not None:
-            int_col_hdrs = np.array(
-                [str(h) for h in int_col_hdrs], dtype=object
-            )
-
-            if not np_check_shape(int_col_hdrs, (num_hdrs,)):
-                raise ValueError(
-                    "int_col_hdrs must specify a header for each set of "
-                    "intensities in the simulated spectrum."
-                )
+        if self._ints.shape[1] == 1:
+            return [hdr_base]
         else:
-            label = "cross_sect" if self._w is not None else "int"
+            return [
+                "{0}_{1}".format(hdr_base, i + 1)
+                for i in range(self._ints.shape[1])
+            ]
 
-            if num_hdrs == 1:
-                int_col_hdrs = [label]
-            else:
-                int_col_hdrs = [
-                    "{0}_{1}".format(label, i + 1) for i in range(num_hdrs)
-                ]
-
-        return np.asarray(int_col_hdrs, dtype=object)
-
-    def peak_table(self, int_col_hdrs=None):
+    def peak_table(self):
         """Return the peak table as a Pandas `DataFrame`.
-
-        Parameters
-        ----------
-        int_col_hdrs : array_like or None, optional
-            Column header(s) for the intensity column(s) in the
-            `DataFrame` (default: automatically determined).
 
         Returns
         -------
@@ -528,21 +473,13 @@ class RamanSpectrum(GammaPhononSpectrumBase):
         else:
             d["irrep"] = ["None"] * len(self._freqs)
 
-        for i, h in enumerate(
-            self._get_int_col_hdrs(int_col_hdrs=int_col_hdrs)
-        ):
+        for i, h in enumerate(self._get_data_frame_column_headers()):
             d[h] = self._ints[:, i]
 
         return pd.DataFrame(d)
 
-    def spectrum(self, int_col_hdrs=None):
+    def spectrum(self):
         """Return the spectrum as a Pandas `DataFrame`.
-
-        Parameters
-        ----------
-        int_col_hdrs : array_like or None, optional
-            Column header(s) for the intensity column(s) in the
-            `DataFrame` (default: automatically determined).
 
         Returns
         -------
@@ -550,13 +487,267 @@ class RamanSpectrum(GammaPhononSpectrumBase):
             `DataFrame` containing the spectrum.
         """
 
-        self._lazy_init_y()
+        self._lazy_init_spectrum()
 
         d = {"freq_energy": self.x}
 
-        for i, h in enumerate(
-            self._get_int_col_hdrs(int_col_hdrs=int_col_hdrs)
-        ):
-            d[h] = self._y[:, i]
+        for i, h in enumerate(self._get_data_frame_column_headers()):
+            d[h] = self._sp[:, i]
 
         return pd.DataFrame(d)
+
+
+# ---------------------
+# RamanSpectrum1D class
+# ---------------------
+
+
+class RamanSpectrum1D(RamanSpectrumBase):
+    def __init__(
+        self,
+        freqs,
+        ints,
+        lws,
+        irreps=None,
+        w=None,
+        t=None,
+        spectrum_type="stokes",
+        x_range=None,
+        x_res=None,
+        x_units="thz",
+    ):
+        """Create a new instance of the `RamanSpectrum1D` class.
+
+        Parameters
+        ----------
+        freqs : array_like
+            Frequencies in THz (shape: `(N,)`).
+        ints : array_like
+            Band intensities in Ang^4 / sqrt(amu) (shape: `(N,)`).
+        lws : array_like
+            Linewidths in THz (shape: `(N,)`).
+        irreps : Irreps or None, optional
+            `Irreps` object assigning bands to irrep groups.
+        w : float or None, optional
+            Measurement wavelength in nm to calculate intensity
+            modulation envelope (default: None).
+        t : float or None, optional
+            Temperature in K to calculate phonon occupation numbers for
+            intensity modulation envelope (default: None)
+        spectrum_type : {'stokes', 'anti-stokes', 'both'}
+            Type of spectrum (default: 'stokes').
+        x_range : tuple of float or None, optional
+            `(min, max)` range of x-axis of simulated spectrum in
+            `x_units` (default: automatically determined).
+        x_res : float or None, optional
+            Resolution of x-axis in `x_units` (default: automatically
+            determined).
+        x_units : str or None, optional
+            x-axis units of simulated spectrum (default: `'thz'`).
+        """
+
+        # Perform base class initialisation.
+
+        super(RamanSpectrum1D, self).__init__(
+            freqs,
+            ints,
+            lws,
+            irreps=irreps,
+            w=w,
+            t=t,
+            spectrum_type=spectrum_type,
+            x_range=x_range,
+            x_res=x_range,
+            x_units=x_units,
+        )
+
+        # Check supplied intensities are 1D.
+
+        if not np_check_shape(self._ints, (len(self._freqs), 1)):
+            raise ValueError(
+                "For 1D spectra, ints must be a an array_like with "
+                "shape (N,)."
+            )
+
+    @property
+    def intensities(self):
+        """numpy.ndarray : Band intensities (shape: `(N,)`)."""
+        return np_readonly_view(self._ints.reshape((-1,)))
+
+    @property
+    def y(self):
+        """numpy.ndarray : Spectrum (shape: `(O,)`.)"""
+        self._lazy_init_spectrum()
+        return np_readonly_view(self._sp.reshape((-1,)))
+
+    @property
+    def y_unit_text_label(self):
+        """str : y-axis label suitable for plain-text output."""
+        return self._intensity_unit_text_label
+
+    @property
+    def y_unit_plot_label(self):
+        """str: y-axis label suitable for plotting (may contain TeX
+        strings)."""
+        return self._intensity_unit_plot_label
+
+
+# ---------------------
+# RamanSpectrum2D class
+# ---------------------
+
+
+class RamanSpectrum2D(RamanSpectrumBase):
+    def __init__(
+        self,
+        freqs,
+        ints,
+        lws,
+        d2_axis_vals,
+        d2_unit_text_label,
+        irreps=None,
+        w=None,
+        t=None,
+        spectrum_type="stokes",
+        x_range=None,
+        x_res=None,
+        x_units="thz",
+        d2_unit_plot_label=None,
+        d2_col_hdrs=None,
+    ):
+        """Create a new instance of the `RamanSpectrum2D` class.
+
+        Parameters
+        ----------
+        freqs : array_like
+            Frequencies in THz (shape: `(N,)`).
+        ints : array_like
+            Band intensities in Ang^4 / sqrt(amu) (shape: `(N,)`).
+        lws : array_like
+            Linewidths in THz (shape: `(N,)`).
+        d2_axis_vals : array_like
+            Values of secondary axis (shape: `(M,)`).
+        d2_unit_text_label : str
+            Text label for secondary axis units.
+        irreps : Irreps or None, optional
+            `Irreps` object assigning bands to irrep groups.
+        w : float or None, optional
+            Measurement wavelength in nm to calculate intensity
+            modulation envelope (default: None).
+        t : float or None, optional
+            Temperature in K to calculate phonon occupation numbers for
+            intensity modulation envelope (default: None)
+        spectrum_type : {'stokes', 'anti-stokes', 'both'}
+            Type of spectrum (default: 'stokes').
+        x_range : tuple of float or None, optional
+            `(min, max)` range of x-axis of simulated spectrum in
+            `x_units` (default: automatically determined).
+        x_res : float or None, optional
+            Resolution of x-axis in `x_units` (default: automatically
+            determined).
+        x_units : str or None, optional
+            x-axis units of simulated spectrum (default: `'thz'`).
+        d2_unit_plot_label : str or None, optional
+            Plot label for secondary axis units (default:
+            `d2_unit_text_label`).
+        d2_col_hdrs : array_like or None, optional
+            Column headings for `pandas.DataFrame` objects (shape:
+            `(M,)`; default: automatically determined).
+        """
+        # Pass args/kwargs through to base class.
+
+        super(RamanSpectrum2D, self).__init__(
+            freqs,
+            ints,
+            lws,
+            irreps=irreps,
+            w=w,
+            t=t,
+            spectrum_type=spectrum_type,
+            x_range=x_range,
+            x_res=x_res,
+            x_units=x_units,
+        )
+
+        d2_axis_vals = np_asarray_copy(d2_axis_vals)
+
+        if not np_check_shape(d2_axis_vals, (self._ints.shape[1],)):
+            raise ValueError(
+                "d2_axis_vals must be an array_like with shape `(M,)`."
+            )
+
+        d2_unit_text_label = str(d2_unit_text_label)
+
+        if d2_unit_plot_label is not None:
+            d2_unit_plot_label = str(d2_unit_plot_label)
+        else:
+            d2_unit_plot_label = d2_unit_text_label
+
+        if d2_col_hdrs is not None:
+            d2_col_hdrs = np.array([str(h) for h in d2_col_hdrs], dtype=object)
+
+            if not np_check_shape(d2_col_hdrs, (self._ints.shape[1],)):
+                raise ValueError(
+                    "If supplied, d2_col_hdrs must be an array_like with shape `(M,)`."
+                )
+
+        self._d2_axis_vals = d2_axis_vals
+
+        self._d2_unit_text_label = d2_unit_text_label
+        self._d2_unit_plot_label = d2_unit_plot_label
+
+        self._d2_col_hdrs = d2_col_hdrs
+
+    def _get_data_frame_column_headers(self):
+        """Overrides base class method to return column headers for
+        `pandas.DataFrame` objects supplied by during construction.
+
+        Returns
+        ------
+        col_hdrs : list of str
+            Column headers.
+        """
+
+        if self._d2_col_hdrs is not None:
+            return self._d2_col_hdrs
+
+        return super()._get_data_frame_column_headers()
+
+    @property
+    def intensities(self):
+        """numpy.ndarray : Band intensities (shape: `(N, M)`)."""
+        return np_readonly_view(self._ints)
+
+    @property
+    def y(self):
+        """numpy.ndarray : y values (shape: `(M,)`)."""
+        return np_readonly_view(self._d2_axis_vals)
+
+    @property
+    def z(self):
+        """numpy.ndarray : z values (shape: `(O, M)`)."""
+
+        self._lazy_init_spectrum()
+        return np_readonly_view(self._sp)
+
+    @property
+    def y_unit_text_label(self):
+        """str : y-axis label suitable for plain-text output."""
+        return self._d2_unit_text_label
+
+    @property
+    def y_unit_plot_label(self):
+        """str: y-axis label suitable for plotting (may contain TeX
+        strings.)"""
+        return self._d2_unit_plot_label
+
+    @property
+    def z_unit_text_label(self):
+        """str : z-axis label suitable for plain-text output."""
+        return self._intensity_unit_text_label
+
+    @property
+    def z_unit_plot_label(self):
+        """str : z-axis label suitable for plotting (may contain TeX
+        strings)."""
+        return self._intensity_unit_plot_label

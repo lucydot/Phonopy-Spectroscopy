@@ -64,7 +64,7 @@ def unit_circle_quad_rule(n, ret="angles"):
 
     .. math::
 
-        \int_0^{2\pi} f(\psi) d\psi = 2 \pi \sum_i w_i * f(\psi_i)
+        \int_0^{2\pi} f(\psi) d\psi = 2 \pi \sum_i w_i f(\psi_i)
     """
 
     psi = np.linspace(0.0, 2.0 * np.pi, n + 1)[:-1]
@@ -212,7 +212,7 @@ def unit_sphere_lebedev_quad_rule(p, ret="angles"):
 
     .. math::
 
-        \int_0^{2\pi} \int_0^{\pi} f(\phi, \theta) \sin \theta d\theta d\phi = 4 \pi \sum_i w_i * f(\phi_i, \theta_i)
+        \int_0^{2\pi} \int_0^{\pi} f(\phi, \theta) \sin \theta \; d\theta \; d\phi = 4 \pi \sum_i w_i f(\phi_i, \theta_i)
     """
 
     if _UNIT_SPHERE_LEBEDEV_QUAD_DATA is None:
@@ -254,9 +254,9 @@ def unit_sphere_lebedev_quad_rule(p, ret="angles"):
 
 
 def lebedev_circle_quad(f, p, n=None, args=None):
-    r"""Perform a numerical integration of a function
-    :math:`f(\phi, \theta, \psi)` over the Euler angles `phi`, `\theta`
-    and `\psi` using a combined Lebedev + circle quadrature scheme.
+    r"""Perform a numerical integration of a function over the Euler
+    angles `phi`, `\theta` and `\psi` using a combined Lebedev + circle
+    quadrature scheme.
 
     Parameters
     ----------
@@ -283,7 +283,7 @@ def lebedev_circle_quad(f, p, n=None, args=None):
 
     .. math::
 
-        \int_0^{2\pi} \int_0^{\pi} \int_0^{2\pi} f(\phi, \theta \psi) \sin \theta d\psi d\theta d\phi
+        \int_0^{2\pi} \int_0^{\pi} \int_0^{2\pi} f(\phi, \theta, \psi) \sin \theta \; d\psi \; d\theta \; d\phi = 8 \pi^2 \sum_i \sum_j w_i w_j f(\phi_i, \theta_i, \psi_j)
     """
 
     phi, theta, w_sph = unit_sphere_lebedev_quad_rule(p, ret="angles")

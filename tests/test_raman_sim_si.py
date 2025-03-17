@@ -189,7 +189,7 @@ class TestRamanSimulation(unittest.TestCase):
 
         i_pol = Polarisation.from_direction("x")
 
-        sp = self._calc.powder_polariation_rotation(
+        sp = self._calc.powder_polarisation_rotation(
             self._geom,
             i_pol,
             "rot",

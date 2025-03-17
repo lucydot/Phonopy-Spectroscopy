@@ -31,7 +31,7 @@ from .intensity import (
     calculate_powder_raman_intensities,
 )
 
-from .spectrum import RamanSpectrum
+from .spectrum import RamanSpectrum1D, RamanSpectrum2D
 from .tensors import RamanTensors
 
 from ..utility.geometry import (
@@ -98,9 +98,7 @@ class RamanCalculation:
                     )
 
             if gamma_ph.has_irreps:
-                irreps = gamma_ph.irreps.get_subset(
-                    band_inds=band_inds, reset_inds=True
-                )
+                irreps = gamma_ph.irreps.get_subset(band_inds, reset_inds=True)
 
         else:
             band_inds = np.array(list(range(gamma_ph.num_modes)), dtype=int)
@@ -111,7 +109,48 @@ class RamanCalculation:
         self._band_inds = band_inds
         self._irreps = irreps
 
-    def _get_calc_params(self, geom, i_pols, s_pols, lw, w):
+    def _get_band_inds_from_grp_inds(self, band_grp_inds):
+        """Determine the band indices for a set of band groups.
+
+        Parameters
+        ----------
+        band_grp_inds : array_like or None
+            Band groups.
+
+        Returns
+        -------
+        band_inds : numpy.ndarray
+            Band indices.
+        """
+
+        if band_grp_inds is not None:
+            for idx in band_grp_inds:
+                if idx < 0 or idx >= self.num_band_groups:
+                    raise ValueError(
+                        "One or more band group indices are not "
+                        "compatible with the number of irrep groups or "
+                        "the number of bands in the calculation."
+                    )
+
+            if self.irreps is not None:
+                # Band group indices map to irrep groups.
+
+                band_inds = []
+
+                for idx in band_grp_inds:
+                    band_inds.extend(self.irreps.irrep_band_indices[idx])
+
+                return np.array(band_inds, dtype=int)
+            else:
+                # Band group indices map to individual bands.
+
+                return np.array(band_grp_inds, dtype=int)
+
+        return np.array(list(range(len(self._band_inds))), dtype=int)
+
+    def _get_calc_params(
+        self, geom, i_pols, s_pols, w, e_rt, lw, band_grp_inds
+    ):
         """Determine parameters for Raman calculations.
 
         Parameters
@@ -126,27 +165,91 @@ class RamanCalculation:
             depending on whether calculation has linewidths.
         w : float or None
             Measurement wavelength (default: None).
+        e_rt : float or None
+            Photon energy for evaluating Raman tensors (default:
+            calculated from `w` if set, and if energy-dependent Raman
+            tensors are available, otherwise E = 0.)
+        band_grp_inds : array_like or None
+            Indices of band groups to include in the calculation.
 
         Returns
         -------
         params : dict
-            Dictionary of calculation parameters with the following: {
-                'geometry': `Geometry`,
+            Dictionary of calculation parameters with the following: `{
+                'frequencies': numpy.ndarray,
+                'raman_tensors': numpy.ndarray,
+                'linewidths': numpy.ndarray,
+                'irreps': Irreps or None
+                'geometry': Geometry,
                 'incident_polarisations': numpy.ndarray,
                 'scattered_polarisations': numpy.ndarray,
-                'single_polarisation': bool,
-                'linewidths': numpy.ndarray,
-                'raman_tensors': numpy.ndarray
-                }
+                'is_2d_spectrum': bool
+                }`
         """
+
+        # Determine band indices to include in the calculation.
+
+        band_inds = self._get_band_inds_from_grp_inds(band_grp_inds)
 
         params = {}
 
-        # Determine polarisations.
+        # Frequencies.
+
+        params["frequencies"] = self.frequencies[band_inds]
+
+        # Raman tensors.
+
+        if e_rt is None:
+            e_rt = 0.0
+
+            if w is not None:
+                if self._r_t.is_energy_dependent:
+                    e_rt = nm_to_ev(w)
+                else:
+                    warnings.warn(
+                        "A measurement wavelength was specified but the "
+                        "calculation is not using energy-dependent Raman "
+                        "tensors. Raman intensities will be calculated "
+                        "using the far from resonance approximation and "
+                        "the wavelength will only be used to apply "
+                        "intensity modulation.",
+                        RuntimeWarning,
+                    )
+
+        r_t = self._r_t.get_tensors_at_energy(e_rt)
+        params["raman_tensors"] = r_t[band_inds]
+
+        # Linewidths.
+
+        if lw is None:
+            # Default value.
+
+            lw = 1.0 if self._gamma_ph.linewidths is not None else 0.5
+        else:
+            if lw < ZERO_TOLERANCE:
+                raise ValueError("lw cannot be zero or negative.")
+
+        params["linewidths"] = (
+            lw * self.linewidths[band_inds]
+            if self.linewidths is not None
+            else np.array([lw] * len(band_inds), dtype=np.float64)
+        )
+
+        # Irreps.
+
+        params["irreps"] = (
+            self.irreps.get_subset(band_inds, reset_inds=True)
+            if self.irreps is not None
+            else None
+        )
+
+        # Geometry and incident/scattered polarisations.
 
         i_pols, i_pols_n_dim_add = np_expand_dims(
             np.asarray(i_pols, dtype=object), (None,)
         )
+
+        is_2d = i_pols_n_dim_add == 0
 
         s_pols_str = str(s_pols).lower()
 
@@ -163,60 +266,18 @@ class RamanCalculation:
                 np.asarray(s_pols, dtype=object), (None,)
             )
 
+            is_2d = is_2d or s_pols_n_dim_add == 0
+
             i_pols, s_pols = np.broadcast_arrays(i_pols, s_pols)
 
         params["geometry"] = geom
         params["incident_polarisations"] = i_pols
         params["scattered_polarisations"] = s_pols
 
-        # Keep track of whether the calculation is working with a single
-        # or multiple polarisations.
+        # Flag for whether the calculation is working with a single or
+        # multiple polarisations.
 
-        params["single_polarisation"] = (
-            i_pols_n_dim_add != 0 and s_pols_n_dim_add != 0
-        )
-
-        # Determine linewidths.
-
-        lws = None
-
-        if lw is None:
-            # Default value.
-
-            lw = 1.0 if self._gamma_ph.linewidths is not None else 0.5
-        else:
-            if lw < ZERO_TOLERANCE:
-                raise ValueError("lw cannot be zero or negative.")
-
-        if self._gamma_ph.linewidths is not None:
-            lws = lw * self._gamma_ph.linewidths[self._band_inds]
-        else:
-            lws = [lw] * len(self._band_inds)
-
-        params["linewidths"] = lws
-
-        # Determine Raman tensors.
-
-        rt_e = 0.0
-
-        if w is not None:
-            if w < 0.0:
-                raise ValueError("Measurment wavelengths cannot be negative.")
-
-            if self._r_t.is_energy_dependent:
-                rt_e = nm_to_ev(w)
-            else:
-                warnings.warn(
-                    "A measurement wavelength was specified but the "
-                    "calculation is not using energy-dependent Raman "
-                    "tensors. Raman intensities will be calculated "
-                    "using the far from resonance approximation and "
-                    "the wavelength will only be used to apply "
-                    "intensity modulation.",
-                    RuntimeWarning,
-                )
-
-        params["raman_tensors"] = self._r_t.get_tensors_at_energy(rt_e)
+        params["is_2d_spectrum"] = is_2d
 
         return params
 
@@ -266,6 +327,18 @@ class RamanCalculation:
         """RamanTensors : Underlying `RamanTensors` object."""
         return self._r_t
 
+    @property
+    def num_band_groups(self):
+        """int : Number of band groups in the calculation. Band groups
+        are equivalent to irrep groups if the underlying phonon
+        calculation has irreps, or to the number of bands in the
+        calculation otherwise."""
+
+        if self.irreps is not None:
+            return len(self.irreps.irrep_band_indices)
+
+        return len(self._band_inds)
+
     def single_crystal(
         self,
         hkl,
@@ -276,10 +349,9 @@ class RamanCalculation:
         w=None,
         t=None,
         lw=None,
-        spectrum_type="stokes",
-        x_range=None,
-        x_res=None,
-        x_units="thz",
+        e_rt=None,
+        band_grp_inds=None,
+        **kwargs
     ):
         """Simulate a single-crystal Raman measurement.
 
@@ -299,40 +371,64 @@ class RamanCalculation:
             the `hkl` rotation.
         w, t : float or None, optional
             Measurement wavelength and temperature.
+        e_rt : float or None, optional
+            Photon energy for evaluating Raman tensors in energy-
+            dependent Raman calculations (default: calculated from `w`
+            if set and if energy-dependent Raman tensors are available,
+            otherwise E = 0.)
         lw : float or None, optional
             Uniform linewidth or scale factor for calculated linewidths
-            (defaults: 0.5 THz uniform linewidth or scale factor of 1.0),
-            depending on whether calculation has linewidths.
-        spectrum_type : {'stokes', 'anti-stokes', 'both'}, optional
-            Type of spectrum (default: `'stokes'`).
-        x_range : tuple of float or None, optional
-            Range of spectrum as a `(min, max)` tuple, or `None` to
-            automatically determine a suitable range (default: `None`).
-        x_res : float or None, optional
-            Resolution of spectrum or `None` to automatically determine
-            a suitable resolution (default: `None`).
-        x_units : str, optional
-            Frequency units of spectrum (default: `'thz'`).
+            (defaults: 0.5 THz uniform linewidth or scale factor of
+            1.0), depending on whether calculation has linewidths.
+        band_grp_inds : array_like or None, optional
+            Indices of "band groups" to include in the calculation
+            (default: all groups). Groups are defined by irreps if
+            available, or the band indices in the calculation otherwise.
+        **kwargs : any
+            Keyword arguments to the `RamanSpectrum1D` and
+            `RamanSpectrum2D` constructors (some of these may be
+            required depending on other parameters - see notes below).
 
         Returns
         -------
-        spectrum : RamanSpectrum
+        spectrum : RamanSpectrum1D or RamanSpectrum2D
             Simulated Raman spectrum.
+
+        See Also
+        --------
+        num_band_groups
+            Number of band groups in the calculation.
+        raman.spectrum.RamanSpectrum1D, raman.spectrum.RamanSpectrum2D
+            Objects returned by this function.
 
         Notes
         -----
         * If both `i_pols` and `s_pols` are single polarisations, and
-            `rots` is either None or a single rotation, the function
-            returns a 1D spectrum.
+          `rots` is either None or a single rotation, the function
+          returns a 1D spectrum.
         * If `i_pols` and/or `s_pols`, or `rots`, specify multiple
-            values, the function returns an 2D spectrum.
+          values, the function returns an 2D spectrum.
         * A single function call cannot combine multiple polarisations
-            and multiple rotations.
+          and multiple rotations.
+        * The `e_rt` parameter is provided so that the intensity
+          modulation "envelope" due to the laser wavelength and changes
+          in intensity due energy-dependent polarisability can be
+          modelled separately.
+        * The indices in `band_grp_inds` correspond directly to the
+          entries in the peak tables in the `RamanSpectrum` objects
+          produced with the default `band_grp_inds=None`). The number of
+          band groups can be obtained with the `num_band_groups`
+          property.
+        * If called with multiple polarisations to generate a 2D
+          spectrum, additional keyword args to the `RamanSpectrum2D`
+          constructor will need to be specified.
         """
 
-        params = self._get_calc_params(geom, i_pol, s_pol, lw, w)
+        params = self._get_calc_params(
+            geom, i_pol, s_pol, w, e_rt, lw, band_grp_inds
+        )
 
-        single_int = params["single_polarisation"]
+        is_2d = params["is_2d_spectrum"]
 
         if rot is not None:
             rot, n_dim_add = np_expand_dims(np.asarray(rot), (None, 3, 3))
@@ -343,7 +439,7 @@ class RamanCalculation:
                     "combined with multiple crystal rotations."
                 )
 
-            single_int = single_int and n_dim_add > 0
+            is_2d = is_2d or n_dim_add == 0
 
         r = rotation_matrix_from_vectors(
             self._gamma_ph.structure.real_space_normal(hkl),
@@ -403,21 +499,38 @@ class RamanCalculation:
 
         ints = np.array(ints, dtype=np.float64).T
 
-        if single_int:
-            ints = ints[:, 0].reshape((-1,))
+        if is_2d:
+            if (
+                "d2_axis_vals" not in kwargs
+                or "d2_unit_text_label" not in kwargs
+            ):
+                raise Exception(
+                    "Multiple polarisations/rotations produce 2D "
+                    "spectra and require the optional d2_axis_vals and "
+                    "d2_unit_text_label keywords to be specified."
+                )
 
-        return RamanSpectrum(
-            self.frequencies,
-            ints,
-            params["linewidths"],
-            self.irreps,
-            w=w,
-            t=t,
-            spectrum_type=spectrum_type,
-            x_range=x_range,
-            x_res=x_res,
-            x_units=x_units,
-        )
+            return RamanSpectrum2D(
+                params["frequencies"],
+                ints,
+                params["linewidths"],
+                kwargs.pop("d2_axis_vals"),
+                kwargs.pop("d2_unit_text_label"),
+                irreps=params["irreps"],
+                w=w,
+                t=t,
+                **kwargs
+            )
+        else:
+            return RamanSpectrum1D(
+                params["frequencies"],
+                ints,
+                params["linewidths"],
+                irreps=params["irreps"],
+                w=w,
+                t=t,
+                **kwargs
+            )
 
     def single_crystal_polarisation_rotation(
         self,
@@ -455,8 +568,8 @@ class RamanCalculation:
 
         Returns
         -------
-        spectrum : RamanSpectrum
-            Simulated (2D) Raman spectrum.
+        spectrum : RamanSpectrum2D
+            Simulated Raman spectrum.
 
         See Also
         --------
@@ -467,6 +580,15 @@ class RamanCalculation:
         See `single_crystal` for optional keyword arguments.
         """
 
+        angles = np.arange(chi_start, chi_end + chi_step / 10.0, chi_step)
+
+        if len(angles) < 2:
+            raise ValueError(
+                "Fewer than two angles between chi_start = {0:.2f} -> "
+                "chi_end = {1:.2f} with chi_step = {2:.2f}."
+                "".format(chi_start, chi_end, chi_step)
+            )
+
         i_pol_str = str(i_pol).lower()
         s_pol_str = str(s_pol).lower()
 
@@ -474,16 +596,22 @@ class RamanCalculation:
             if s_pol_str == "rot":
                 raise Exception("i_pol and s_pol cannot both be set to 'rot'.")
 
-            i_pol = Polarisation.from_rotation(
-                geom.incident_direction, chi_start, chi_end, chi_step
-            )
+            i_pol = Polarisation.from_angles(geom.incident_direction, angles)
 
         if s_pol_str == "rot":
-            s_pol = Polarisation.from_rotation(
-                geom.collection_direction, chi_start, chi_end, chi_step
-            )
+            s_pol = Polarisation.from_angles(geom.collection_direction, angles)
 
-        return self.single_crystal(hkl, geom, i_pol, s_pol, **kwargs)
+        return self.single_crystal(
+            hkl,
+            geom,
+            i_pol,
+            s_pol,
+            d2_axis_vals=angles,
+            d2_unit_text_label="chi / deg",
+            d2_unit_plot_label=r"$\chi$ / $^\circ$",
+            d2_col_hdrs=["chi_{0:.2f}".format(a) for a in angles],
+            **kwargs
+        )
 
     def single_crystal_crystal_rotation(
         self,
@@ -521,8 +649,8 @@ class RamanCalculation:
 
         Returns
         -------
-        spectrum : RamanSpectrum
-            Simulated (2D) Raman spectrum.
+        spectrum : RamanSpectrum2D
+            Simulated Raman spectrum.
 
         See Also
         --------
@@ -553,10 +681,10 @@ class RamanCalculation:
 
         angles = np.arange(phi_start, phi_end + phi_step / 10.0, phi_step)
 
-        if len(angles) == 0:
+        if len(angles) < 2:
             raise ValueError(
-                "No angles between phi_start = {0:.2f} -> phi_end = "
-                "{1:.2f} with phi_step = {2:.2f}."
+                "Fewer than two angles between phi_start = {0:.2f} -> "
+                "phi_end = {1:.2f} with phi_step = {2:.2f}."
                 "".format(phi_start, phi_end, phi_step)
             )
 
@@ -565,7 +693,18 @@ class RamanCalculation:
             dtype=np.float64,
         )
 
-        return self.single_crystal(hkl, geom, i_pol, s_pol, rot=rots, **kwargs)
+        return self.single_crystal(
+            hkl,
+            geom,
+            i_pol,
+            s_pol,
+            rot=rots,
+            d2_axis_vals=angles,
+            d2_unit_text_label="phi / deg",
+            d2_unit_plot_label=r"$\phi$ / $^\circ$",
+            d2_col_hdrs=["phi_{0:.2f}".format(a) for a in angles],
+            **kwargs
+        )
 
     def powder(
         self,
@@ -576,13 +715,12 @@ class RamanCalculation:
         pref_orient_eta=0.0,
         w=None,
         t=None,
+        e_rt=None,
         lw=None,
-        spectrum_type="stokes",
-        x_range=None,
-        x_res=None,
-        x_units="thz",
+        band_grp_inds=None,
         method="best",
         lebedev_prec=5,
+        **kwargs
     ):
         """Simulate a powder Raman spectrum with optional preferred
         orientation.
@@ -602,28 +740,67 @@ class RamanCalculation:
             (default: 0.0)
         w, t : float or None, optional
             Measurement wavelength and temperature.
-        lw : float, optional
+        e_rt : float or None, optional
+            Photon energy for evaluating Raman tensors in energy-
+            dependent Raman calculations (default: calculated from `w`
+            if set and if energy-dependent Raman tensors are available,
+            otherwise E = 0.)
+        lw : float or None, optional
             Uniform linewidth or scale factor for calculated linewidths
-            (defaults: 0.5 THz uniform linewidth or scale factor of 1.0),
-            depending on whether calculation has linewidths.
-        spectrum_type : {'stokes', 'anti-stokes', 'both'}, optional
-            Type of spectrum (default: `'stokes'`).
-        x_range : tuple of float or None, optional
-            Range of spectrum as a `(min, max)` tuple, or `None` to
-            automatically determine a suitable range (default: `None`).
-        x_res : float or None, optional
-            Resolution of spectrum or `None` to automatically determine
-            a suitable resolution (default: `None`).
-        x_units : str, optional
-            Frequency units of spectrum (default: `'thz'`).
+            (defaults: 0.5 THz uniform linewidth or scale factor of
+            1.0), depending on whether calculation has linewidths.
+        band_grp_inds : array_like or None, optional
+            Indices of "band groups" to include in the calculation
+            (default: all groups). Groups are defined by irreps if
+            available, or the band indices in the calculation otherwise.
+        **kwargs : any
+            Keyword arguments to the `RamanSpectrum` constructor (some
+            of these may be required depending on other parameters - see
+            notes).
         method : {'nquad', 'lebedev+circle', 'best'}, optional
             Method for powder averaging (default: `'best'`).
         lebedev_prec : int, optional
             Precision of the Lebedev + circle numerical quadrature
             scheme (default: 5).
+        **kwargs : any
+            Keyword arguments to the `RamanSpectrum1D` and
+            `RamanSpectrum2D` constructors (some of these may be
+            required depending on other parameters - see notes below).
+
+        Returns
+        -------
+        spectrum : RamanSpectrum1D or RamanSpectrum2D
+            Simulated Raman spectrum.
+
+        See Also
+        --------
+        num_band_groups
+            Number of band groups in the calculation.
+        raman.intensity.calculate_powder_raman_intensities
+            Lower-level API function used to calculate powder Raman
+            intensities.
+        raman.spectrum.RamanSpectrum1D, raman.spectrum.RamanSpectrum2D
+            Objects returned by this function.
+
+        Notes
+        -----
+        * The `w_rt` parameter is provided so that the intensity
+          modulation "envelope" due to the laser wavelength and changes
+          in intensity due energy-dependent polarisability can be
+          modelled separately.
+        * The indices in `band_grp_inds` correspond directly to the
+          entries in the peak tables in the `RamanSpectrum` objects
+          produced with the default `band_grp_inds=None`). The number of
+          band groups can be obtained with the `num_band_groups`
+          property.
+        * If called with multiple polarisations to generate a 2D
+          spectrum, additional keyword args to the `RamanSpectrum2D`
+          constructor will need to be specified.
         """
 
-        params = self._get_calc_params(geom, i_pol, s_pol, lw, w)
+        params = self._get_calc_params(
+            geom, i_pol, s_pol, w, e_rt, lw, band_grp_inds
+        )
 
         if method.lower() == "best":
             # method = 'best' will use an analytical formula if
@@ -689,23 +866,40 @@ class RamanCalculation:
 
         ints = np.array(ints, dtype=np.float64).T
 
-        if params["single_polarisation"]:
-            ints = ints[:, 0].reshape((-1,))
+        if params["is_2d_spectrum"]:
+            if (
+                "d2_axis_vals" not in kwargs
+                or "d2_unit_text_label" not in kwargs
+            ):
+                raise Exception(
+                    "Multiple polarisations produce 2D spectra and "
+                    "require the optional d2_axis_vals and "
+                    "d2_unit_text_label keywords to be specified."
+                )
 
-        return RamanSpectrum(
-            self.frequencies,
-            ints,
-            params["linewidths"],
-            self.irreps,
-            w=w,
-            t=t,
-            spectrum_type=spectrum_type,
-            x_range=x_range,
-            x_res=x_res,
-            x_units=x_units,
-        )
+            return RamanSpectrum2D(
+                params["frequencies"],
+                ints,
+                params["linewidths"],
+                kwargs.pop("d2_axis_vals"),
+                kwargs.pop("d2_unit_text_label"),
+                irreps=params["irreps"],
+                w=w,
+                t=t,
+                **kwargs
+            )
+        else:
+            return RamanSpectrum1D(
+                params["frequencies"],
+                ints,
+                params["linewidths"],
+                irreps=params["irreps"],
+                w=w,
+                t=t,
+                **kwargs
+            )
 
-    def powder_polariation_rotation(
+    def powder_polarisation_rotation(
         self,
         geom,
         i_pol,
@@ -739,8 +933,8 @@ class RamanCalculation:
 
         Returns
         -------
-        spectrum : RamanSpectrum
-            Simulated (2D) Raman spectrum.
+        spectrum : RamanSpectrum2D
+            Simulated Raman spectrum.
 
         See Also
         --------
@@ -757,6 +951,15 @@ class RamanCalculation:
             if "pref_orient_eta" in kwargs and kwargs["pref_orient_eta"] > 0.0:
                 chi_step = 22.5
 
+        angles = np.arange(chi_start, chi_end + chi_step / 10.0, chi_step)
+
+        if len(angles) < 2:
+            raise ValueError(
+                "Fewer than two angles between chi_start = {0:.2f} -> "
+                "chi_end = {1:.2f} with chi_step = {2:.2f}."
+                "".format(chi_start, chi_end, chi_step)
+            )
+
         i_pol_str = str(i_pol).lower()
         s_pol_str = str(s_pol).lower()
 
@@ -764,16 +967,21 @@ class RamanCalculation:
             if s_pol_str == "rot":
                 raise Exception("i_pol and s_pol cannot both be set to 'rot'.")
 
-            i_pol = Polarisation.from_rotation(
-                geom.incident_direction, chi_start, chi_end, chi_step
-            )
+            i_pol = Polarisation.from_angles(geom.incident_direction, angles)
 
         if s_pol_str == "rot":
-            s_pol = Polarisation.from_rotation(
-                geom.collection_direction, chi_start, chi_end, chi_step
-            )
+            s_pol = Polarisation.from_angles(geom.collection_direction, angles)
 
-        return self.powder(geom, i_pol, s_pol, **kwargs)
+        return self.powder(
+            geom,
+            i_pol,
+            s_pol,
+            d2_axis_vals=angles,
+            d2_unit_text_label="chi / deg",
+            d2_unit_plot_label=r"$\chi$ / $^\circ$",
+            d2_col_hdrs=["chi_{0:.2f}".format(a) for a in angles],
+            **kwargs
+        )
 
     def to_dict(self):
         """Return the internal data as a dictionary of native Python

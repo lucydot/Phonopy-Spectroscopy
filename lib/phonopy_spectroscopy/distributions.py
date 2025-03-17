@@ -26,9 +26,9 @@ from .utility.numpy_helper import np_expand_dims
 
 
 def gaussian(x, i, mu, sigma):
-    r"""Evaluate the Gaussian lineshape :math:`G(x, i, \mu, \sigma)`
-    with the supplied intensity (peak area) `i`, mean `mu` (centre) and
-    standard deviation `sigma` (width).
+    r"""Evaluate the Gaussian lineshape with the supplied intensity
+    (peak area) `i`, mean `mu` (centre) and standard deviation (width)
+    `sigma`.
 
     Parameters
     ----------
@@ -44,12 +44,12 @@ def gaussian(x, i, mu, sigma):
 
     Notes
     -----
-    The definition of :math:`G(x, i, \mu, \sigma)` is taken from:
+    The definition of :math:`G(x, I, \mu, \sigma)` is taken from:
     http://mathworld.wolfram.com/GaussianFunction.html.
 
     .. math::
 
-        G(x) = \frac{i}{\sqrt{2\pi} \sigma} \exp{-\frac{(x - \mu)^2}{2 \sigma^2}}
+        G(x) = \frac{I}{\sqrt{2\pi} \sigma} \exp{-\frac{(x - \mu)^2}{2 \sigma^2}}
     """
 
     x = np.asarray(x)
@@ -60,9 +60,8 @@ def gaussian(x, i, mu, sigma):
 
 
 def lorentzian(x, i, x0, gamma):
-    r"""Evaluate the Lorentzian lineshape :math:`L(x, i, x_0, \Gamma)`
-    with intensity (peak area) `i`, central value `x0` and width
-    `gamma`.
+    r"""Evaluate the Lorentzian lineshape with intensity (peak area)
+    `i`, central value `x0` and width `gamma`.
 
     Parameters
     ----------
@@ -78,12 +77,12 @@ def lorentzian(x, i, x0, gamma):
 
     Notes
     -----
-    The definition of :math:`L(x, i, x_0, \Gamma)` is taken from:
+    The definition of :math:`L(x, I, x_0, \Gamma)` is taken from:
     http://mathworld.wolfram.com/LorentzianFunction.html.
 
     .. math::
 
-        L(x) = \frac{i}{\pi} \sigma} \frac{\frac{1}{2} \Gamma}{(x - x_0)^2 + (\frac{1}{2} \Gamma)^2}
+        L(x) = \frac{I}{\pi} \frac{\frac{1}{2} \Gamma}{(x - x_0)^2 + (\frac{1}{2} \Gamma)^2}
     """
 
     x = np.asarray(x)
@@ -97,9 +96,8 @@ def lorentzian(x, i, x0, gamma):
 
 
 def phonon_occupation_number(nu, t):
-    """Evaluate the phonon occupation number :math:`n(\nu, t)` for
-    frequencies `nu` and temperature `t` using the Bose-Einstein
-    distribution.
+    r"""Evaluate the phonon occupation number for frequencies `nu` and
+    temperature `t` using the Bose-Einstein distribution.
 
     Parameters
     ----------
@@ -112,6 +110,14 @@ def phonon_occupation_number(nu, t):
     -------
     n : float or array_like
         Phonon occupation number(s) (same shape as `nu`).
+
+    Notes
+    -----
+    The phonon occupation number :math:`n(\nu, T)` is given by:
+
+    .. math::
+
+        n(\nu, T) = \frac{1}{\exp{[h \nu / k_\mathrm{B} T]} - 1}
     """
 
     nu, n_dim_add = np_expand_dims(np.asarray(nu), (None,))
@@ -128,13 +134,13 @@ def phonon_occupation_number(nu, t):
 
 
 def march_dollase(alpha, r):
-    r"""Evaluate the March-Dollase distribution function `TODO` with the
+    r"""Evaluate the March-Dollase distribution function with the
     supplied angle `alpha` and March parameter `r`.
 
     Parameters
     ----------
     alpha : float
-        Angle (radians).
+        Angle in radians.
     r : float
         March parameter.
 
@@ -145,7 +151,11 @@ def march_dollase(alpha, r):
 
     Notes
     -----
-    TODO
+    The March-Dollase distribution function is given by:
+
+    .. math::
+
+        f(\alpha, r) = \left[ r^2 \cos^2 \alpha + \frac{1}{r} \sin^2 \alpha \right]^{-3/2}
     """
 
     return (r**2 * np.cos(alpha) ** 2 + (1.0 / r) * np.sin(alpha) ** 2) ** (
@@ -154,7 +164,7 @@ def march_dollase(alpha, r):
 
 
 def march_dollase_eta_to_r(eta):
-    """Convert a crystallte excess fraction `eta` to the corresponding
+    r"""Convert a crystallte excess fraction `eta` to the corresponding
      March parameter `r` in the March-Dollase distribution function.
 
     Parameters
@@ -166,6 +176,14 @@ def march_dollase_eta_to_r(eta):
     -------
     r : float
         March parameter.
+
+    Notes
+    -----
+    The conversion between `eta` and `r` is given by:
+
+    ..math::
+
+        \frac{1}{\eta^2 - 1} \left[ -\frac{1}{2} \eta^2 + \sqrt{3} \times \eta \times \sqrt{1 - \frac{1}{4}\eta} - 1 \right]
     """
 
     if eta < 0.0 or eta >= 1.0:

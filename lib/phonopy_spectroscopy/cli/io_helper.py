@@ -177,36 +177,70 @@ def df_to_txt(df, file_path, col_fmts, preamble_lines=None):
             f.write("  " + "  ".join(row) + "\n")
 
 
-def peak_table_to_txt(df, x_units, y_units, file_path):
-    """Write a peak table produced by one of the `Spectrum` classes
-    to a plain-text file.
+def _raman_get_preamble_lines(sp):
+    """Return a list of lines to be written to the "preamble" of a
+    plain-text file with data from a `RamanSpectrum` object.
 
     Parameters
     ----------
-    df : pandas.DataFrame
-        `DataFrame` produced by the `Spectrum` object.
+    sp : RamanSpectrum1D or RamanSpectrum2D
+        Raman spectrum.
+
+    Returns
+    -------
+    preamble_lines : list of str
+        Preamble lines to be written to output file.
+    """
+
+    preamble_lines = [
+        "x: {0}".format(sp.x_unit_text_label),
+        "y: {0}".format(sp.y_unit_text_label),
+    ]
+
+    if hasattr(sp, "z"):
+        preamble_lines.append("z: {0}".format(sp.z_unit_text_label))
+
+    return preamble_lines
+
+
+def raman_peak_table_to_txt(sp, file_path):
+    """Write a peak table from a `RamanSpectrum` object to a plain-text
+    file.
+
+    Parameters
+    ----------
+    sp : RamanSpectrum1D or RamanSpectrum2D
+        Raman spectrum.
     file_path : str
         File to write data to.
     """
+
+    df = sp.peak_table()
 
     col_fmts = ["{0: >12.5f}", "{0: >10.5f}", "{0: >5}"]
     col_fmts += ["{0: >12.5e}"] * (len(df.columns) - 3)
 
-    df_to_txt(df, file_path, col_fmts, preamble_lines=[x_units, y_units])
+    df_to_txt(
+        df, file_path, col_fmts, preamble_lines=_raman_get_preamble_lines(sp)
+    )
 
 
-def spectrum_to_txt(df, x_units, y_units, file_path):
-    """Write a spectrum produced by one of the `Spectrum` classes
-    to a plain-text file.
+def raman_spectrum_to_txt(sp, file_path):
+    """Write a spectrum from a `RamanSpectrum` object to a plain-text
+    file.
 
     Parameters
     ----------
-    df : pandas.DataFrame
-        `DataFrame` produced by the `Spectrum` object.
+    sp : RamanSpectrum1D or RamanSpectrum2D
+        Raman spectrum.
     file_path : str
         File to write data to.
     """
 
+    df = sp.spectrum()
+
     col_fmts = ["{0: >12.5f}"] + ["{0: >10.5e}"] * (len(df.columns) - 1)
 
-    df_to_txt(df, file_path, col_fmts, preamble_lines=[x_units, y_units])
+    df_to_txt(
+        df, file_path, col_fmts, preamble_lines=_raman_get_preamble_lines(sp)
+    )
