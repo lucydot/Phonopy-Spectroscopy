@@ -42,6 +42,10 @@ def compare_structures(struct_cmp, struct_ref):
         and np.allclose(struct_cmp.atom_positions, struct_ref.atom_positions)
         and np.equal(struct_cmp.atom_types, struct_ref.atom_types).all()
         and np.allclose(struct_cmp.atomic_masses, struct_ref.atomic_masses)
+        and np.allclose(
+            struct_cmp.conventional_transformation_matrix,
+            struct_ref.conventional_transformation_matrix,
+        )
     )
 
 

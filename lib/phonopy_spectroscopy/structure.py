@@ -242,6 +242,8 @@ class Structure:
         else:
             conv_trans = np.identity(3, dtype=np.float64)
 
+        latt_vecs_conv = np.dot(conv_trans, latt_vecs)
+
         if n_a > 0:
             if cart_to_frac:
                 at_pos = cartesian_to_fractional_coordinates(at_pos, latt_vecs)
@@ -255,15 +257,30 @@ class Structure:
                     )
 
         self._v_latt = latt_vecs
+        self._v_latt_conv = latt_vecs_conv
+
         self._at_pos = at_pos
         self._at_typ = at_typ
         self._at_m = at_m
+
         self._conv_trans = conv_trans
 
     @property
     def lattice_vectors(self):
         """numpy.ndarray : Lattice vectors (shape: `(3, 3)`)."""
         return np_readonly_view(self._v_latt)
+
+    @property
+    def primitive_lattice_vectors(self):
+        """numpy.ndarray : Lattive vectors of the primitive cell
+        (shape: `(3, 3)`, alias for `lattice_vectors`."""
+        return self.lattice_vectors
+
+    @property
+    def conventional_lattice_vectors(self):
+        """numpy.ndarray : Lattive vectors of the conventional cell
+        (shape: `(3, 3)`."""
+        return np_readonly_view(self._v_latt_conv)
 
     @property
     def atom_positions(self):
@@ -284,47 +301,21 @@ class Structure:
     def conventional_transformation_matrix(self):
         """numpy.ndarray : Transformation matrix to convert the
         structure to its conventional cell."""
-        return np_readonly_view(self._prim_trans)
+        return np_readonly_view(self._conv_trans)
 
     @property
     def num_atoms(self):
         """int : Number of atoms in the structure."""
         return self._at_pos.shape[0]
 
-    def _get_v_latt_for_cell_definition(self, cell):
-        """Return the lattice vectors for a given cell definition.
-
-        Parameters
-        ----------
-        cell : {"prim", "conv"}, optional
-            Obtain lattive vectors for the primitive ("prim") or
-            conventional unit cell ("conv").
-
-        Returns
-        -------
-        v_latt : numpy.ndarray
-            Lattice vectors for cell definition (shape: `(3, 3)`).
-        """
-
-        cell = cell.lower()
-
-        if cell == "prim":
-            return self._v_latt.view()
-        elif cell == "conv":
-            return np.dot(self._conv_trans, self._v_latt)
-        else:
-            raise ValueError(
-                'Unknown cell definition cell="{0}".'.format(cell)
-            )
-
-    def volume(self, cell="prim"):
+    def volume(self, conv=False):
         """Calculate the unit-cell volume.
 
         Parameters
         ----------
-        cell : {"prim", "conv"}, optional
-            Compute volume for the primitive ("prim") or conventional
-            unit cell ("conv") (default: "prim").
+        conv : bool, optional
+            If `True`, return the volume of the conventional unit cell
+            (default: `False`).
 
         Returns
         -------
@@ -332,17 +323,17 @@ class Structure:
             Unit-cell volume.
         """
 
-        v_1, v_2, v_3 = self._get_v_latt_for_cell_definition(cell)
+        v_1, v_2, v_3 = self._v_latt_conv if conv else self._v_latt
         return np.dot(v_1, np.cross(v_2, v_3))
 
-    def reciprocal_lattice_vectors(self, cell="prim"):
+    def reciprocal_lattice_vectors(self, conv=False):
         """Calculate and return the reciprocal lattice vectors.
 
         Parameters
         ----------
-        cell : {"prim", "conv"}, optional
-            Compute vectors for the primitive ("prim") or conventional
-            unit cell ("conv") (default: "prim").
+        conv : bool, optional
+            If `True`, return the volume of the conventional unit cell
+            (default: `False`).
 
         Returns
         -------
@@ -350,8 +341,8 @@ class Structure:
             Recipocal lattice vectors (shape: `(3, 3)`).
         """
 
-        a_1, a_2, a_3 = self._get_v_latt_for_cell_definition(cell)
-        v = self.volume(cell=cell)
+        a_1, a_2, a_3 = self._v_latt_conv if conv else self._v_latt
+        v = self.volume(conv=conv)
 
         return np.array(
             [
@@ -362,7 +353,7 @@ class Structure:
             dtype=np.float64,
         )
 
-    def real_space_normal(self, hkl, cell="prim"):
+    def real_space_normal(self, hkl, conv=False):
         """Calculate the real-space normal to the surface with Miller
         index `hkl`.
 
@@ -370,9 +361,9 @@ class Structure:
         ----------
         hkl : array_like
             Integer Miller indices of the surface (shape: `(3,)`).,
-        cell : {"prim", "conv"}, optional
-            Specify the Miller indices in terms of the primitive
-            ("prim") or conventional cell ("conv") (default: "prim").
+        conv : bool, optional
+            If `True`, return the volume of the conventional unit cell
+            (default: `False`).
 
         Returns
         -------
@@ -386,7 +377,7 @@ class Structure:
         if not np_check_shape(hkl, (3,)):
             raise ValueError("hkl must be an array_like with shape `(3,)`.")
 
-        b_1, b_2, b_3 = self.reciprocal_lattice_vectors(cell=cell)
+        b_1, b_2, b_3 = self.reciprocal_lattice_vectors(conv=conv)
 
         # Use the reciprocal metric tensor to obtain the real-space
         # normal in fractional coordinates.
@@ -402,7 +393,7 @@ class Structure:
         norm_frac = np.dot(recip_metric, hkl)
 
         norm_cart = fractional_to_cartesian_coordinates(
-            norm_frac, self._get_v_latt_for_cell_definition(cell)
+            norm_frac, self._v_latt_conv if conv else self._v_latt
         )
 
         return norm_cart / np.linalg.norm(norm_cart)

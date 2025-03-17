@@ -446,7 +446,7 @@ class RamanCalculation:
         # not the primitive cell (if different).
 
         r = rotation_matrix_from_vectors(
-            self._gamma_ph.structure.real_space_normal(hkl, cell="conv"),
+            self._gamma_ph.structure.real_space_normal(hkl, conv=True),
             -1.0 * geom.incident_direction,
         )
 
@@ -842,7 +842,7 @@ class RamanCalculation:
 
         if pref_orient_hkl is not None:
             pref_orient_surf_norm = self._gamma_ph.structure.real_space_normal(
-                pref_orient_hkl, cell="conv"
+                pref_orient_hkl, conv=True
             )
 
         ints = np.zeros(
