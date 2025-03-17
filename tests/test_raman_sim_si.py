@@ -77,12 +77,16 @@ class TestRamanSimulation(unittest.TestCase):
         # Load a Gamma-point phonon calculation using the high-level
         # Phono(3)py "loader" function.
 
+        conv_trans = np.linalg.inv(
+            [[0.0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]]
+        )
+
         gamma_ph = gamma_phonons_from_phono3py(
             os.path.join(_EXAMPLE_BASE_DIR, r"phonopy.yaml"),
             os.path.join(_EXAMPLE_BASE_DIR, r"mesh.hdf5"),
             lws_file=os.path.join(_EXAMPLE_BASE_DIR, r"kappa-m646464-g0.hdf5"),
             irreps_file=os.path.join(_EXAMPLE_BASE_DIR, r"irreps.yaml"),
-            prim_trans=[[0.0, 0.5, 0.5], [0.5, 0.0, 0.5], [0.5, 0.5, 0.0]],
+            conv_trans=conv_trans,
         )
 
         # Construct a FiniteDisplacementRamanTensorCalculator object

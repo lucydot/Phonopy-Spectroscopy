@@ -445,13 +445,8 @@ class RamanCalculation:
         # assume the Miller indices are speficied in terms of this and
         # not the primitive cell (if different).
 
-        cell_def = "prim"
-
-        if self._gamma_ph.structure.conventional_cell_defined:
-            cell_def = "conv"
-
         r = rotation_matrix_from_vectors(
-            self._gamma_ph.structure.real_space_normal(hkl, cell=cell_def),
+            self._gamma_ph.structure.real_space_normal(hkl, cell="conv"),
             -1.0 * geom.incident_direction,
         )
 
@@ -846,15 +841,8 @@ class RamanCalculation:
         pref_orient_surf_norm = None
 
         if pref_orient_hkl is not None:
-            # Use conventional cell definition if available.
-
-            cell_def = "prim"
-
-            if self._gamma_ph.structure.conventional_cell_defined:
-                cell_def = "conv"
-
             pref_orient_surf_norm = self._gamma_ph.structure.real_space_normal(
-                pref_orient_hkl, cell=cell_def
+                pref_orient_hkl, cell="conv"
             )
 
         ints = np.zeros(

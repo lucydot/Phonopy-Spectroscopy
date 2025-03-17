@@ -162,7 +162,7 @@ class Structure:
         at_pos,
         at_typ,
         at_m=None,
-        prim_trans=None,
+        conv_trans=None,
         cart_to_frac=False,
     ):
         """Create a new instance of the `Structure` class.
@@ -177,9 +177,9 @@ class Structure:
             Atom types (shape: `(N,)`).
         at_m : array_like, optional
             Atomic masses (optional, shape: `(N,)`).
-        prim_trans : array_like, optional
-            Specifies a transformation from a conventional cell to this
-            structure.
+        conv_trans : array_like, optional
+            Specifies a transformation to the conventonal unit cell
+            (default: identity matrix).
         cart_to_frac : bool, optional
             If `True`, convert `at_pos` from Cartesian to fractional
             coordinates (default: `False`).
@@ -215,14 +215,32 @@ class Structure:
                     "If supplied, at_m must be an array_like with shape (N,)."
                 )
 
-        if prim_trans is not None:
-            prim_trans = np_asarray_copy(prim_trans, dtype=np.float64)
+        if conv_trans is not None:
+            conv_trans = np_asarray_copy(conv_trans, dtype=np.float64)
 
-            if not np_check_shape(prim_trans, (3, 3)):
+            if not np_check_shape(conv_trans, (3, 3)):
                 raise ValueError(
                     "If supplied, prim_trans must be an array_like "
                     "with shape (3, 3)."
                 )
+
+            # A valid transformation matrix to a conventional cell
+            # should have integer elements, although this may not be
+            # the case if the matrix has not been specified with
+            # sufficient precision.
+
+            abs_diff = np.abs(np.rint(conv_trans) - conv_trans)
+
+            if (abs_diff > ZERO_TOLERANCE).any():
+                warnings.warn(
+                    "One or more elements in conv_trans deviates from "
+                    "integer values by up to {0:.3e}. This could "
+                    "indicate an invalid tranformation matrix or "
+                    "insufficient precision.".format(abs_diff.max()),
+                    UserWarning,
+                )
+        else:
+            conv_trans = np.identity(3, dtype=np.float64)
 
         if n_a > 0:
             if cart_to_frac:
@@ -240,7 +258,7 @@ class Structure:
         self._at_pos = at_pos
         self._at_typ = at_typ
         self._at_m = at_m
-        self._prim_trans = prim_trans
+        self._conv_trans = conv_trans
 
     @property
     def lattice_vectors(self):
@@ -263,9 +281,9 @@ class Structure:
         return np_readonly_view(self._at_m)
 
     @property
-    def primitive_transformation_matrix(self):
-        """numpy.ndarray : Transformation matrix from the conventional
-        cell to this structure."""
+    def conventional_transformation_matrix(self):
+        """numpy.ndarray : Transformation matrix to convert the
+        structure to its conventional cell."""
         return np_readonly_view(self._prim_trans)
 
     @property
@@ -273,14 +291,14 @@ class Structure:
         """int : Number of atoms in the structure."""
         return self._at_pos.shape[0]
 
-    @property
-    def conventional_cell_defined(self):
-        """bool : `True` if the structure has a conventional cell
-        defined, otherwise `False`."""
-        return self._prim_trans is not None
+    def _get_v_latt_for_cell_definition(self, cell):
+        """Return the lattice vectors for a given cell definition.
 
-    def _get_v_latt_for_cell_definition(self, cell="prim"):
-        """Return the lattice vectors for the cell definition `cell`.
+        Parameters
+        ----------
+        cell : {"prim", "conv"}, optional
+            Obtain lattive vectors for the primitive ("prim") or
+            conventional unit cell ("conv").
 
         Returns
         -------
@@ -292,33 +310,8 @@ class Structure:
 
         if cell == "prim":
             return self._v_latt.view()
-
         elif cell == "conv":
-            if self._prim_trans is None:
-                raise Exception(
-                    "The conventional cell can only be used if a "
-                    "primitive transformation matrix was specified at "
-                    "initialisation."
-                )
-
-            conv_trans = np.linalg.inv(self._prim_trans)
-
-            # A valid primitive transformation should have an inverse
-            # with integer values.
-
-            abs_diff = np.abs(np.rint(conv_trans) - conv_trans)
-
-            if (abs_diff > ZERO_TOLERANCE).any():
-                warnings.warn(
-                    "One or more elements in the inverse of the "
-                    "primitive transformation matrix deviates from "
-                    "integer values by up to {0:.3e}. This could "
-                    "indicate an invalid tranformation matrix or "
-                    "inadequate precision.".format(abs_diff.max())
-                )
-
-            return np.dot(conv_trans, self._v_latt)
-
+            return np.dot(self._conv_trans, self._v_latt)
         else:
             raise ValueError(
                 'Unknown cell definition cell="{0}".'.format(cell)
@@ -331,9 +324,7 @@ class Structure:
         ----------
         cell : {"prim", "conv"}, optional
             Compute volume for the primitive ("prim") or conventional
-            unit cell ("conv") (default: "prim"). `cell="conv"` is only
-            valid if a primitive transformation matrix was supplied at
-            construction.
+            unit cell ("conv") (default: "prim").
 
         Returns
         -------
@@ -341,7 +332,7 @@ class Structure:
             Unit-cell volume.
         """
 
-        v_1, v_2, v_3 = self._get_v_latt_for_cell_definition(cell=cell)
+        v_1, v_2, v_3 = self._get_v_latt_for_cell_definition(cell)
         return np.dot(v_1, np.cross(v_2, v_3))
 
     def reciprocal_lattice_vectors(self, cell="prim"):
@@ -351,9 +342,7 @@ class Structure:
         ----------
         cell : {"prim", "conv"}, optional
             Compute vectors for the primitive ("prim") or conventional
-            unit cell ("conv") (default: "prim"). `cell="conv"` is only
-            valid if a primitive transformation matrix was supplied at
-            construction.
+            unit cell ("conv") (default: "prim").
 
         Returns
         -------
@@ -361,7 +350,7 @@ class Structure:
             Recipocal lattice vectors (shape: `(3, 3)`).
         """
 
-        a_1, a_2, a_3 = self._get_v_latt_for_cell_definition(cell=cell)
+        a_1, a_2, a_3 = self._get_v_latt_for_cell_definition(cell)
         v = self.volume(cell=cell)
 
         return np.array(
@@ -383,9 +372,7 @@ class Structure:
             Integer Miller indices of the surface (shape: `(3,)`).,
         cell : {"prim", "conv"}, optional
             Specify the Miller indices in terms of the primitive
-            ("prim") or conventional cell ("conv") (default: "prim"").
-            `cell="conv"` is only valid if a primitive transformation
-            matrix was supplied at construction.
+            ("prim") or conventional cell ("conv") (default: "prim").
 
         Returns
         -------
@@ -415,7 +402,7 @@ class Structure:
         norm_frac = np.dot(recip_metric, hkl)
 
         norm_cart = fractional_to_cartesian_coordinates(
-            norm_frac, self._get_v_latt_for_cell_definition(cell=cell)
+            norm_frac, self._get_v_latt_for_cell_definition(cell)
         )
 
         return norm_cart / np.linalg.norm(norm_cart)
@@ -469,16 +456,12 @@ class Structure:
             Python types.
         """
 
-        prim_trans = (
-            self._prim_trans.tolist() if self._prim_trans is not None else None
-        )
-
         return {
             "lattice_vectors": self._v_latt.tolist(),
             "atom_positions": self._at_pos.tolist(),
             "atom_types": list(self._at_typ),
             "atomic_masses": self._at_m.tolist(),
-            "primitive_transformation_matrix": prim_trans,
+            "conventional_transformation_matrix": self._conv_trans.tolist(),
         }
 
     @staticmethod
@@ -502,5 +485,5 @@ class Structure:
             d["atom_positions"],
             d["atom_types"],
             at_m=d["atomic_masses"],
-            prim_trans=d["primitive_transformation_matrix"],
+            conv_trans=d["conventional_transformation_matrix"],
         )
