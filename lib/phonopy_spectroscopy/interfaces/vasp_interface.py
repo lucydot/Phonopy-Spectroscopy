@@ -340,10 +340,10 @@ def dielectric_from_vasprun_xml(file_path, response_func_type="d-d"):
     ----------
     file_path : str
         File path.
-    response_func_type : {'d-d', 'c-c'}, optional
+    response_func_type : {"d-d", "c-c"}, optional
         For energy-dependent response functions, sets which type of
-        response function to return: density-density (`'d-d'`) or
-        current-current (`'c-c'`) (default: `'d-d'`).
+        response function to return: density-density (`"d-d"`) or
+        current-current (`"c-c"`) (default: `"d-d"`).
 
     Returns
     -------
@@ -366,12 +366,12 @@ def dielectric_from_vasprun_xml(file_path, response_func_type="d-d"):
 
     xpath_strs = [
         # DFPT with LEPSILON = .TRUE.
-        "./calculation/varray[@name='dielectric_ipa']",
-        "./calculation/varray[@name='dielectric_dft']",
-        "./calculation/varray[@name='epsilon']",
+        './calculation/varray[@name="dielectric_ipa"]',
+        './calculation/varray[@name="dielectric_dft"]',
+        './calculation/varray[@name="epsilon"]',
         # Finite field with LCALCEPS = .TRUE.
-        "./calculation/varray[@name='epsilon_scf']",
-        "./calculation/varray[@name='dielectric_scf']",
+        './calculation/varray[@name="epsilon_scf"]',
+        './calculation/varray[@name="dielectric_scf"]',
     ]
 
     for xpath_str in xpath_strs:

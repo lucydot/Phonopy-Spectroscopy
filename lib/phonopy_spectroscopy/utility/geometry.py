@@ -44,8 +44,8 @@ def parse_direction(dirn, norm=False):
     Parameters
     ----------
     dirn : array_like or str
-        3D `(x, y, z)` vector, or one of `{'x', '+x', '-x', 'y', ''+y',
-        '-y', 'z', '+z', '-z'}`.
+        3D `(x, y, z)` vector, or one of `{"x", "+x", "-x", "y", "+y",
+        "-y", "z", "+z", "-z"}`.
     norm : bool, optional
         If `True`, normalise the vector (default: `False`).
 
@@ -82,7 +82,7 @@ def parse_direction(dirn, norm=False):
 
         return v
 
-    raise ValueError("Invalid direction specifier '{0}'.".format(dirn))
+    raise ValueError('Invalid direction specifier "{0}".'.format(dirn))
 
 
 def rotation_matrix_from_vectors(a, b):
@@ -152,7 +152,7 @@ def rotation_matrix_from_axis_angle(k, theta):
 
     .. math::
 
-        \textbf{R} = \textbf{I} + \textbf{K} \sin(\theta) + \textbf{K}^2 (1 - \cos(\theta))
+        \textbf{R} = \textbf{I} + \textbf{K} \sin \theta + \textbf{K}^2 [1 - \cos \theta]
         
     where:
 

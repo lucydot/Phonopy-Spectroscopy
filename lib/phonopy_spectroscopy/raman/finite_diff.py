@@ -61,11 +61,11 @@ class FiniteDisplacementRamanTensorCalculator:
             Gamma-point phonon calculation.
         step_size : float
             Step size for displacements in sqrt(amu) Ang.
-        band_inds : {'all', 'active'} or array_like, optional
-            Band indices to perform calculations for: `'active'` to
+        band_inds : {"all", "active"} or array_like, optional
+            Band indices to perform calculations for: `"active"` to
             exclude the acoustic modes and Raman-inactive optic modes
-            (requires irreps), `'all'` to include all bands, or a list
-            of band indices (shape `(N,)`, default: `'active'`)
+            (requires irreps), `"all"` to include all bands, or a list
+            of band indices (shape `(N,)`, default: `"active"`)
         prec : int, optional
             Precision of the central-difference scheme (defualt: 2)
         disp_steps, step_coeffs : array_like or None, optional
@@ -87,7 +87,7 @@ class FiniteDisplacementRamanTensorCalculator:
                 ).band_indices_flat()
             else:
                 warnings.warn(
-                    "band_inds = 'raman' reset to 'all' because the "
+                    'band_inds="raman" reset to "all" because the '
                     "supplied phonon calculation does not have "
                     "irreducible representations.",
                     UserWarning,

@@ -235,7 +235,7 @@ def get_irrep_activities(point_group, irrep_type):
     ----------
     point_group : str
         Point group.
-    irrep_type : {'ir', 'raman', 'all'}
+    irrep_type : {"ir", "raman", "all"}
         Type of irrep to return.
 
     Returns
@@ -257,14 +257,14 @@ def get_irrep_activities(point_group, irrep_type):
 
     if point_group not in _IRREP_ACTIVITIES:
         raise ValueError(
-            "Unknown point_group = '{0}' (this may be a bug)."
+            'Unknown point_group="{0}" (this may be a bug).'
             "".format(point_group)
         )
 
     if irrep_type not in _IRREP_ACTIVITIES[point_group]:
         raise ValueError(
-            "No irreps of type irrep_type = '{0}' for point_group = "
-            "'{1}' (this may be a bug).".format(point_group, irrep_type)
+            'No irreps of type irrep_type="{0}" for point_group='
+            '"{1}" (this may be a bug).'.format(point_group, irrep_type)
         )
 
     active_irreps = [sym for sym in _IRREP_ACTIVITIES[point_group][irrep_type]]
@@ -362,9 +362,9 @@ class Irreps:
                     )
         else:
             warnings.warn(
-                "Point group {0} not recognised. Irrep symbols will "
-                "be verified and get_subset() with irreps = "
-                "{'ir', 'raman'} will fail.".format(pt_grp)
+                'Point group "{0}" not recognised. Irrep symbols will '
+                'be verified and get_subset() with irreps="ir" or '
+                'irreps="raman" will fail.'.format(pt_grp)
             )
 
         self._pt_grp = pt_grp
@@ -409,7 +409,7 @@ class Irreps:
 
         Parameters
         ----------
-        band_inds : {'ir', 'raman', 'all'} or array_like
+        band_inds : {"ir", "raman", "all"} or array_like
             Subset of bands to select.
         reset_inds : bool, optional
             If `True`, "reset" the band indices to be continuous from

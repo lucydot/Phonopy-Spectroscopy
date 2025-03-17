@@ -418,11 +418,11 @@ def calculate_powder_raman_intensities(
     pref_orient_surf_norm : array_like or str, optional
         Surface normal for preferred orientation (default: `None`,
         required if `pref_orient_eta` > 0).
-    method : {'nquad', 'lebedev+circle', 'best'}
+    method : {"nquad", "lebedev+circle", "best"}
         Method for calculating intensnties.
     lebedev_prec : int
         Specifies the precision of the Lebedev/circle quadrature scheme
-        for `method='lebedev+circle'`.
+        for `method="lebedev+circle"`.
 
     Returns
     -------
@@ -490,7 +490,7 @@ def calculate_powder_raman_intensities(
             lebedev_prec=lebedev_prec,
         )
 
-    raise ValueError("Unknown method = '{0}'.".format(method))
+    raise ValueError('Unknown method="{0}".'.format(method))
 
 
 def calculate_powder_raman_intensities_analytical(r_t, geom, i_pol, s_pol):
@@ -609,11 +609,11 @@ def calculate_powder_raman_intensities_numerical(
     pref_orient_surf_norm : array_like or str, optional
         Surface normal for preferred orientation (default: `None`,
         required if `pref_orient_eta` > 0).
-    method : {'nquad', 'lebedev+circle', 'best'}
+    method : {"nquad", "lebedev+circle", "best"}
         Method for calculating intensnties.
     lebedev_prec : int
         Specifies the precision of the Lebedev/circle quadrature scheme
-        for `method='lebedev+circle'`.
+        for `method="lebedev+circle"`.
 
     Returns
     -------
@@ -671,7 +671,7 @@ def calculate_powder_raman_intensities_numerical(
                 "Powder Raman simulations with preferred orientation "
                 "using the Lebedev + circle quadrature scheme require "
                 "careful testing of the precision and should ideally "
-                "be verified against the results with method='nquad'.",
+                'be verified against the results with method="nquad".',
                 UserWarning,
             )
 
@@ -692,6 +692,6 @@ def calculate_powder_raman_intensities_numerical(
                 )
 
     else:
-        raise Exception("Unknown method = '{0}'.".format(method))
+        raise Exception('Unknown method="{0}".'.format(method))
 
     return ints if n_dim_add == 0 else ints

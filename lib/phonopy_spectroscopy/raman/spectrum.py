@@ -73,7 +73,7 @@ def adjust_gamma_phonons_for_spectrum_type(
         Linewidths (shape: `(N,)`).
     irrep_syms : array_like or None, optional
         Irreducible representation (irrep) symbols (shape: `(N,)`).
-    spectrum_type : {'stokes', 'anti-stokes', 'both'}
+    spectrum_type : {"stokes", "anti-stokes", "both"}
         Type of Raman spectrum (default "stokes").
 
     Returns
@@ -141,7 +141,7 @@ def adjust_gamma_phonons_for_spectrum_type(
                 np.concatenate((irrep_syms_as, irrep_syms), axis=0),
             )
 
-    raise ValueError("Unsupported spectrum type: '{0}'.".format(spectrum_type))
+    raise ValueError('Unsupported spectrum_type="{0}".'.format(spectrum_type))
 
 
 def modulate_intensities(freqs, ints, w=None, t=None):
@@ -243,8 +243,8 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
         t : float or None, optional
             Temperature in K to calculate phonon occupation numbers for
             intensity modulation envelope (default: None)
-        spectrum_type : {'stokes', 'anti-stokes', 'both'}
-            Type of spectrum (default: 'stokes').
+        spectrum_type : {"stokes", "anti-stokes", "both"}
+            Type of spectrum (default: "stokes").
         **kwargs : any, optional
             Keyword arguments to the `GammaPhononSpectrumBase`
             constructor.
@@ -397,7 +397,7 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
 
     @property
     def spectrum_type(self):
-        """{'stokes', 'anti-stokes', 'both'} : Type of spectrum."""
+        """{"stokes", "anti-stokes", "both"} : Type of spectrum."""
         return self._spectrum_type
 
     @property
@@ -534,8 +534,8 @@ class RamanSpectrum1D(RamanSpectrumBase):
         t : float or None, optional
             Temperature in K to calculate phonon occupation numbers for
             intensity modulation envelope (default: None)
-        spectrum_type : {'stokes', 'anti-stokes', 'both'}
-            Type of spectrum (default: 'stokes').
+        spectrum_type : {"stokes", "anti-stokes", "both"}
+            Type of spectrum (default: "stokes").
         x_range : tuple of float or None, optional
             `(min, max)` range of x-axis of simulated spectrum in
             `x_units` (default: automatically determined).
@@ -543,7 +543,7 @@ class RamanSpectrum1D(RamanSpectrumBase):
             Resolution of x-axis in `x_units` (default: automatically
             determined).
         x_units : str or None, optional
-            x-axis units of simulated spectrum (default: `'thz'`).
+            x-axis units of simulated spectrum (default: `"thz"`).
         """
 
         # Perform base class initialisation.
@@ -637,8 +637,8 @@ class RamanSpectrum2D(RamanSpectrumBase):
         t : float or None, optional
             Temperature in K to calculate phonon occupation numbers for
             intensity modulation envelope (default: None)
-        spectrum_type : {'stokes', 'anti-stokes', 'both'}
-            Type of spectrum (default: 'stokes').
+        spectrum_type : {"stokes", "anti-stokes", "both"}
+            Type of spectrum (default: "stokes").
         x_range : tuple of float or None, optional
             `(min, max)` range of x-axis of simulated spectrum in
             `x_units` (default: automatically determined).
@@ -646,7 +646,7 @@ class RamanSpectrum2D(RamanSpectrumBase):
             Resolution of x-axis in `x_units` (default: automatically
             determined).
         x_units : str or None, optional
-            x-axis units of simulated spectrum (default: `'thz'`).
+            x-axis units of simulated spectrum (default: `"thz"`).
         d2_unit_plot_label : str or None, optional
             Plot label for secondary axis units (default:
             `d2_unit_text_label`).

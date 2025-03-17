@@ -47,16 +47,16 @@ def unit_circle_quad_rule(n, ret="angles"):
     ----------
     n : int
         Number of points for the quadrature rule.
-    ret : {'angles', 'vectors', 'vectors_2d', 'vectors_3d'}, optional
-        Return angles, 2D vectors (`ret='vectors_2d'`) or 3D vectors
-        (`ret='vectors'`, `ret=`vectors_3d`) (default: `'angles'`).
+    ret : {"angles", "vectors", "vectors_2d", "vectors_3d"}, optional
+        Return angles, 2D vectors (`ret="vectors_2d"`) or 3D vectors
+        (`ret="vectors"`, `ret="vectors_3d"`) (default: `"angles"`).
 
     Returns
     -------
     circle_rule : tuple of numpy.ndarray
-        Tuple of `(psi, w)` if `ret='angles'` or `(vecs, w)` if
-        `ret='vectors'`/`ret='vectors_3d'` (`vecs` shape: `(n, 3)`) or
-        `ret='vectors_2d'` (shape: `(n, 2)`).
+        Tuple of `(psi, w)` if `ret="angles"` or `(vecs, w)` if
+        `ret="vectors"`/`ret="vectors_3d"` (`vecs` shape: `(n, 3)`) or
+        `ret="vectors_2d"` (shape: `(n, 2)`).
 
     Notes
     -----
@@ -81,7 +81,7 @@ def unit_circle_quad_rule(n, ret="angles"):
 
         return (vecs, w)
 
-    raise ValueError("Unknown return format '{0}'.".format(ret))
+    raise ValueError('Unknown return format "{0}".'.format(ret))
 
 
 # -----------
@@ -191,14 +191,14 @@ def unit_sphere_lebedev_quad_rule(p, ret="angles"):
     ----------
     p : int
         Precision of the quadrature rule.
-    ret : {'angles', 'vectors'}, optional
-        Return angles or vectors (default `'angles'`).
+    ret : {"angles", "vectors"}, optional
+        Return angles or vectors (default `"angles"`).
 
     Returns
     -------
     sphere_rule : tuple of numpy.ndarray
-        Tuple of `(phi, theta, w)` if `ret='angles'` or `(vecs, w)` if
-        `ret='vectors'` (`vecs` shape: `(N, 3)`).
+        Tuple of `(phi, theta, w)` if `ret="angles"` or `(vecs, w)` if
+        `ret="vectors"` (`vecs` shape: `(N, 3)`).
 
     See Also
     --------
@@ -245,7 +245,7 @@ def unit_sphere_lebedev_quad_rule(p, ret="angles"):
 
         return (vecs, np.copy(w))
 
-    raise ValueError("Unknown return format '{0}'.".format(ret))
+    raise ValueError('Unknown return format "{0}".'.format(ret))
 
 
 # ----------------------------------

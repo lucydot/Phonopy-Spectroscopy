@@ -71,12 +71,12 @@ def get_distance_unit_conversion_factor(unit_from, unit_to):
     unit_from = unit_from.lower()
 
     if unit_from not in _DISTANCE_UNIT_DATA:
-        raise Exception("Unsupported unit_from = '{0}'.".format(unit_from))
+        raise Exception('Unsupported unit_from="{0}".'.format(unit_from))
 
     unit_to = unit_to.lower()
 
     if unit_to not in _DISTANCE_UNIT_DATA:
-        raise Exception("Unsupported unit_to = '{0}'.".format(unit_to))
+        raise Exception('Unsupported unit_to="{0}".'.format(unit_to))
 
     # Determine conversion factor.
 
@@ -151,7 +151,7 @@ def get_frequency_unit_text_label(unit):
         if k in _FREQUENCY_UNIT_DATA:
             return _FREQUENCY_UNIT_DATA[k]["text_label"]
 
-    raise Exception("Unsupported unit = '{0}'.".format(unit))
+    raise Exception('Unsupported unit="{0}".'.format(unit))
 
 
 def get_frequency_unit_plot_label(unit):
@@ -175,7 +175,7 @@ def get_frequency_unit_plot_label(unit):
         if k in _FREQUENCY_UNIT_DATA:
             return _FREQUENCY_UNIT_DATA[k]["plot_label"]
 
-    raise Exception("Unsupported unit = '{0}'.".format(unit))
+    raise Exception('Unsupported unit="{0}".'.format(unit))
 
 
 def get_frequency_unit_conversion_factor(unit_from, unit_to):
@@ -196,12 +196,12 @@ def get_frequency_unit_conversion_factor(unit_from, unit_to):
     unit_from = unit_from.lower()
 
     if unit_from not in _FREQUENCY_UNIT_DATA:
-        raise Exception("Unsupported unit_from '{0}'.".format(unit_from))
+        raise Exception('Unsupported unit_from "{0}".'.format(unit_from))
 
     unit_to = unit_to.lower()
 
     if unit_to not in _FREQUENCY_UNIT_DATA:
-        raise Exception("Unsupported unit_to '{0}'.".format(unit_to))
+        raise Exception('Unsupported unit_to "{0}".'.format(unit_to))
 
     # Determine conversion factor.
 

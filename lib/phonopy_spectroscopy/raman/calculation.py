@@ -159,7 +159,7 @@ class RamanCalculation:
             Measurement geometry.
         i_pols, s_pols : str, Polarisation or array_like
             Incident and scattered light polarisation(s). `s_pol` may be
-            specified by one of {'parallel', 'cross', 'sum'}.
+            specified by one of {"parallel", "cross", "sum"}.
         lw : float or None
             Uniform linewidth or scale factor for calculated linewidths,
             depending on whether calculation has linewidths.
@@ -176,14 +176,14 @@ class RamanCalculation:
         -------
         params : dict
             Dictionary of calculation parameters with the following: `{
-                'frequencies': numpy.ndarray,
-                'raman_tensors': numpy.ndarray,
-                'linewidths': numpy.ndarray,
-                'irreps': Irreps or None
-                'geometry': Geometry,
-                'incident_polarisations': numpy.ndarray,
-                'scattered_polarisations': numpy.ndarray,
-                'is_2d_spectrum': bool
+                "frequencies": numpy.ndarray,
+                "raman_tensors": numpy.ndarray,
+                "linewidths": numpy.ndarray,
+                "irreps": Irreps or None
+                "geometry": Geometry,
+                "incident_polarisations": numpy.ndarray,
+                "scattered_polarisations": numpy.ndarray,
+                "is_2d_spectrum": bool
                 }`
         """
 
@@ -365,7 +365,7 @@ class RamanCalculation:
         i_pol, s_pol : str, Polarisation or list of Polarisation
             Polarisation(s) of incident and scattered light. The
             scattered polarisation may also be specified by one of
-            {'parallel', 'cross', 'sum'}.
+            {"parallel", "cross", "sum"}.
         rot : array_like or None, optional
             Rotation matrix or set of matrices to realign crystal after
             the `hkl` rotation.
@@ -557,9 +557,9 @@ class RamanCalculation:
             Measurement geometry.
         i_pol, s_pol : str or Polarisation
             Polarisation of incident and scattered light. The
-            polarisation to be rotated can be specified by 'rot'. The
+            polarisation to be rotated can be specified by "rot". The
             scattered polarisation may also be specified by one of
-            {'parallel', 'cross', 'sum'}.
+            {"parallel", "cross", "sum"}.
         chi_start, chi_end, chi_step : float, optional
             Start/end angle and angle step for polarisation rotation in
             degrees (defaults: 0 -> 360 deg in 2.5 deg steps).
@@ -594,7 +594,7 @@ class RamanCalculation:
 
         if i_pol_str == "rot":
             if s_pol_str == "rot":
-                raise Exception("i_pol and s_pol cannot both be set to 'rot'.")
+                raise Exception('i_pol and s_pol cannot both be set to "rot".')
 
             i_pol = Polarisation.from_angles(geom.incident_direction, angles)
 
@@ -638,12 +638,12 @@ class RamanCalculation:
         i_pol, s_pol : str or Polarisation
             Polarisation(s) of incident and scattered light. The
             scattered polarisation may also be specified by one of
-            {'parallel', 'cross', 'sum'}.
+            {"parallel", "cross", "sum"}.
         phi_start, phi_end, phi_step : float, optional
             Start/end angle and angle step for crystal rotation in
             degrees (defaults: 0 -> 360 deg in 2.5 deg steps).
-        rot_axis : {'incident', 'collection'}, optional
-            Axis to rotate around (default: 'incident')
+        rot_axis : {"incident", "collection"}, optional
+            Axis to rotate around (default: "incident")
         **kwargs : any
             Optional arguments to `single_crystal`.
 
@@ -677,7 +677,7 @@ class RamanCalculation:
         elif rot_axis == "collection":
             rot_axis = geom.collection_direction
         else:
-            raise ValueError("Unknown rot_axis = '{0}'.".format(rot_axis))
+            raise ValueError('Unknown rot_axis="{0}".'.format(rot_axis))
 
         angles = np.arange(phi_start, phi_end + phi_step / 10.0, phi_step)
 
@@ -732,7 +732,7 @@ class RamanCalculation:
         i_pol, s_pol : str, Polarisation or list of Polarisation
             Polarisation(s) of incident and scattered light. The
             scattered polarisation may also be specified by one of
-            {'parallel', 'cross', 'sum'}.
+            {"parallel", "cross", "sum"}.
         pref_orient_hkl : tuple of int or None, optional
             Miller index of the preferred orientation (default: None).
         pref_orient_eta : float, optional
@@ -757,8 +757,8 @@ class RamanCalculation:
             Keyword arguments to the `RamanSpectrum` constructor (some
             of these may be required depending on other parameters - see
             notes).
-        method : {'nquad', 'lebedev+circle', 'best'}, optional
-            Method for powder averaging (default: `'best'`).
+        method : {"nquad", "lebedev+circle", "best"}, optional
+            Method for powder averaging (default: `"best"`).
         lebedev_prec : int, optional
             Precision of the Lebedev + circle numerical quadrature
             scheme (default: 5).
@@ -803,7 +803,7 @@ class RamanCalculation:
         )
 
         if method.lower() == "best":
-            # method = 'best' will use an analytical formula if
+            # method="best" will use an analytical formula if
             # possible. If multiple incident polarisations are
             # supplied and could result in a mix of analytical and
             # numerical methods being used, raise a warning.
@@ -827,8 +827,8 @@ class RamanCalculation:
                         "The given set of incident polarisatios may "
                         "result in a mix of calculations with "
                         "analytical and numerical methods with method "
-                        "= 'best'. To avoid this warning, set method = "
-                        "'lebedev+circle' instead.",
+                        '= "best". To avoid this warning, set method = '
+                        '"lebedev+circle" instead.',
                         RuntimeWarning,
                     )
 
@@ -919,9 +919,9 @@ class RamanCalculation:
             Measurement geometry.
         i_pol, s_pol : str or Polarisation
             Polarisation of incident and scattered light. The
-            polarisation to be rotated can be specified by 'rot'. The
+            polarisation to be rotated can be specified by "rot". The
             scattered polarisation may also be specified by one of
-            {'parallel', 'cross', 'sum'}.
+            {"parallel", "cross", "sum"}.
         chi_start, chi_end : float, optional
             Start/end angle for polarisation rotation in degrees
             (defaults: 0 -> 360 deg).
@@ -965,7 +965,7 @@ class RamanCalculation:
 
         if i_pol_str == "rot":
             if s_pol_str == "rot":
-                raise Exception("i_pol and s_pol cannot both be set to 'rot'.")
+                raise Exception('i_pol and s_pol cannot both be set to "rot".')
 
             i_pol = Polarisation.from_angles(geom.incident_direction, angles)
 

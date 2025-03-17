@@ -175,7 +175,7 @@ class SpectrumBase:
 
             if x_units not in get_supported_frequency_units():
                 raise Exception(
-                    "x_units = '{0}' is not a supported "
+                    'x_units="{0}" is not a supported '
                     "frequency/energy unit (this may be a bug)."
                     "".format(x_units)
                 )
@@ -248,7 +248,7 @@ class GammaPhononSpectrumBase(SpectrumBase):
         x : array_like or None, optional
             x-axis values in `units` (overrides `x_range` and `x_res`).
         x_units : str, optional
-            x-axis units of the simulated spectrum (default: `'thz'`).
+            x-axis units of the simulated spectrum (default: `"thz"`).
 
         See Also
         --------

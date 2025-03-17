@@ -143,7 +143,7 @@ def lookup_atomic_mass(symbol):
             return db_mass
 
     raise ValueError(
-        "Data for symbol = '{0}' not available in "
+        'Data for symbol="{0}" not available in '
         "phonopy.atoms.atom_data.".format(symbol)
     )
 

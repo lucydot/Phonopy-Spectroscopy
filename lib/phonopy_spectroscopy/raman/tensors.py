@@ -206,8 +206,8 @@ class RamanTensors:
             `RamanTensors` object constructed from the data in `d`.
         """
 
-        # The 'raman_tensors' key may contain only a 'real' key, or may
-        # contain both 'real' and 'imag' keys.
+        # The "raman_tensors" key may contain only a "real" key, or may
+        # contain both "real" and "imag" keys.
 
         r_t_real = np.asarray(d["raman_tensors"]["real"], dtype=np.float64)
 
@@ -218,7 +218,7 @@ class RamanTensors:
 
             if not np.equal(np.shape(r_t_imag), np.shape(r_t_real)).all():
                 raise Exception(
-                    "'raman_tensors' key contains 'real' and 'imag' "
+                    '"raman_tensors" key contains "real" and "imag" '
                     "keys with different array shapes."
                 )
 

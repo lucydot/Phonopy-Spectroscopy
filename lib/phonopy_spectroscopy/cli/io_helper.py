@@ -137,7 +137,7 @@ def df_to_txt(df, file_path, col_fmts, preamble_lines=None):
         `DataFrame` to write.
     preamble_lines : list of str
         Line(s) to write to the start of the output file (will be
-        prepended with '# ').
+        prepended with "# ").
     col_fmts : list of str
         Format specifiers for columns.
     file_path : str
