@@ -179,7 +179,8 @@ def df_to_txt(df, file_path, col_fmts, preamble_lines=None):
 
 def _raman_get_preamble_lines(sp):
     """Return a list of lines to be written to the "preamble" of a
-    plain-text file with data from a `RamanSpectrum` object.
+    plain-text file with data from a `RamanSpectrum1D` or
+    `RamanSpectrum2D` object.
 
     Parameters
     ----------
@@ -204,8 +205,8 @@ def _raman_get_preamble_lines(sp):
 
 
 def raman_peak_table_to_txt(sp, file_path):
-    """Write a peak table from a `RamanSpectrum` object to a plain-text
-    file.
+    """Write a peak table from a  a `RamanSpectrum1D` or
+    `RamanSpectrum2D` object to a plain-text file.
 
     Parameters
     ----------
@@ -226,8 +227,8 @@ def raman_peak_table_to_txt(sp, file_path):
 
 
 def raman_spectrum_to_txt(sp, file_path):
-    """Write a spectrum from a `RamanSpectrum` object to a plain-text
-    file.
+    """Write a spectrum from a  a `RamanSpectrum1D` or `RamanSpectrum2D`
+    object to a plain-text file.
 
     Parameters
     ----------

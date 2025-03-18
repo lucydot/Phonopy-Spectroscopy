@@ -97,8 +97,8 @@ def gamma_phonons_from_phono3py(
     else:
         struct = structure_from_poscar(cell_file)
 
-    # If a primitive transformation matrix is specified, create a new
-    # structure with the conv_trans keyword set.
+    # If a transformation matrix is specified, create a new structure
+    # with the conv_trans keyword set.
 
     if conv_trans is not None:
         struct = Structure(
