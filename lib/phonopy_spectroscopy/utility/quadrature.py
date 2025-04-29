@@ -119,7 +119,7 @@ def _unit_sphere_lebedev_quad_load_data():
         p = int(root.split("_")[-1])
 
         if p <= 0:
-            raise Exception(
+            raise RuntimeError(
                 "One or more stored Lebedev quadrature rules have an "
                 "invalid precision (this is likely a bug)."
             )
@@ -138,7 +138,7 @@ def _unit_sphere_lebedev_quad_load_data():
         # Quadrature weights should sum to 1.
 
         if np.abs(1.0 - np.sum(w)) > ZERO_TOLERANCE:
-            raise Exception(
+            raise RuntimeError(
                 "One or more stored Lebedev quadrature rules have "
                 "invalid integration weights (this is likely a bug)."
             )
@@ -153,7 +153,7 @@ def _unit_sphere_lebedev_quad_load_data():
         quad_data[p] = (phi, theta, w)
 
     if len(quad_data) == 0:
-        raise Exception(
+        raise RuntimeError(
             "No stored Lebedev quadrature rules found (this is likely a bug)."
         )
 
@@ -219,7 +219,7 @@ def unit_sphere_lebedev_quad_rule(p, ret="angles"):
         _unit_sphere_lebedev_quad_load_data()
 
     if p not in _UNIT_SPHERE_LEBEDEV_QUAD_DATA:
-        raise Exception(
+        raise ValueError(
             "p = {0} is not valid for Lebedev quadrature, or data for "
             "this quadrature rule is not available.".format(p)
         )

@@ -83,7 +83,7 @@ class FiniteDisplacementRamanTensorCalculator:
         elif band_inds_str == "active":
             if gamma_ph.has_irreps:
                 band_inds = gamma_ph.irreps.get_subset(
-                    band_inds="raman"
+                    band_inds="raman", reset_inds=False
                 ).band_indices_flat()
             else:
                 warnings.warn(
@@ -120,7 +120,7 @@ class FiniteDisplacementRamanTensorCalculator:
 
             for idx in band_inds:
                 if idx < 0 or idx >= gamma_ph.num_modes:
-                    raise Exception(
+                    raise ValueError(
                         "One or more indices in band_indices are "
                         "incompatible with the number of modes in the "
                         "phonon calculation."
@@ -135,7 +135,7 @@ class FiniteDisplacementRamanTensorCalculator:
                 or not np_check_shape(step_coeffs, (None,))
                 or len(disp_steps) != len(step_coeffs)
             ):
-                raise Exception(
+                raise ValueError(
                     "steps and coefficients must both be specified and "
                     "must be the same length."
                 )
@@ -261,6 +261,19 @@ class FiniteDisplacementRamanTensorCalculator:
                     "If supplied, e must be an array_like with shape (O,)."
                 )
 
+        # The paper this is based on (Porezag and Pederson, Phys. Rev. B
+        # 54, 7830, 1996, 10.1103/PhysRevB.54.7830) uses "polarisability
+        # volumes" in Ang^3, and the prefactor of V / (4 \pi) is used in
+        # the vasp_raman.py code (Fonari and Stauffer,
+        # https://github.com/raman-sc/VASP/).
+
+        # With the dielectrics in units of relative permittivity,
+        # scaling by V should convert to polarisability volume, and
+        # the factor of 4 \pi comes from the relation:
+
+        # \alpha = 4 \pi \eps_0 \alpha' ->
+        #   \alpha' = (1 / 4 \pi) * (\alpha / \eps_0).
+
         r_t = (
             dielectrics
             * self._step_coeffs[
@@ -278,8 +291,9 @@ class FiniteDisplacementRamanTensorCalculator:
             mask = e < e_cut
 
             if mask.sum() == len(e):
-                raise Exception(
-                    "The supplied e_cut/w_cut removes all the energies in e."
+                raise RuntimeError(
+                    "The supplied e_cut/w_cut removes all the energies "
+                    "in e."
                 )
 
             e = e[mask]

@@ -128,7 +128,7 @@ def gamma_phonons_from_phono3py(
             freqs_evecs_file
         )
     else:
-        raise Exception(
+        raise RuntimeError(
             "Frequencies/eigenvectors file {0}: unknown format.".format(
                 freqs_evecs_file
             )
@@ -213,7 +213,7 @@ def gamma_freqs_evecs_from_mesh_or_band_yaml(file_path):
             # q = (0, 0, 0) = \Gamma.
 
             if "eigenvector" not in qpt["band"][0]:
-                raise Exception(
+                raise RuntimeError(
                     "mesh.yaml/band.yaml file {0}: Eigenvectors not found."
                     "".format(file_path)
                 )
@@ -232,7 +232,7 @@ def gamma_freqs_evecs_from_mesh_or_band_yaml(file_path):
             # zero, and we can drop the last dimension.
 
             if not np.allclose(evecs[:, :, :, 1], 0.0, atol=ZERO_TOLERANCE):
-                raise Exception(
+                raise RuntimeError(
                     "mesh.yaml/band.yaml file {0}: One or more "
                     "Gamma-point eigenvectors has a non-zero "
                     "imaginary part.".format(file_path)
@@ -240,7 +240,7 @@ def gamma_freqs_evecs_from_mesh_or_band_yaml(file_path):
 
             return (freqs, evecs[:, :, :, 0])
 
-    raise Exception(
+    raise RuntimeError(
         "mesh.yaml/band.yaml file {0}: Gamma-point "
         "frequencies/eigenvectors not found.".format(file_path)
     )
@@ -264,7 +264,7 @@ def irreps_from_irreps_yaml(file_path):
     data = load_yaml(file_path)
 
     if not np.allclose(data["q-position"], 0.0, atol=ZERO_TOLERANCE):
-        raise Exception(
+        raise RuntimeError(
             "irreps.yaml file {0}: Irreps are for a non-Gamma q."
             "".format(file_path)
         )
@@ -302,7 +302,7 @@ def gamma_freqs_evecs_from_mesh_or_band_hdf5(file_path):
 
     with h5py.File(file_path, "r") as f:
         if "eigenvector" not in f:
-            raise Exception(
+            raise RuntimeError(
                 "mesh.hdf5/band.hdf5 file {0}: Eigenvectors not found."
                 "".format(file_path)
             )
@@ -328,7 +328,7 @@ def gamma_freqs_evecs_from_mesh_or_band_hdf5(file_path):
 
             evecs = f["eigenvector"][:].reshape((n_seg * n_qpts, n_bnd, n_bnd))
         else:
-            raise Exception(
+            raise RuntimeError(
                 "mesh.hdf5/band.hdf5 file {0}: Unknown data format."
                 "".format(file_path)
             )
@@ -338,7 +338,7 @@ def gamma_freqs_evecs_from_mesh_or_band_hdf5(file_path):
                 freqs = freqs[idx]
 
                 if not np.allclose(evecs[idx].imag, 0.0, atol=ZERO_TOLERANCE):
-                    raise Exception(
+                    raise RuntimeError(
                         "mesh.hdf5/band.hdf5 file {0}: One or more "
                         "Gamma-point eigenvectors has a non-zero "
                         "imaginary part.".format(file_path)
@@ -355,7 +355,7 @@ def gamma_freqs_evecs_from_mesh_or_band_hdf5(file_path):
 
                 return (freqs, evecs)
 
-    raise Exception(
+    raise RuntimeError(
         "mesh.hdf5/band.hdf5 file {0}: Gamma-point "
         "frequencies/eigenvectors not found.".format(file_path)
     )
@@ -380,24 +380,32 @@ def gamma_linewidths_from_kappa_hdf5(file_path, t=300.0):
         cond = f["temperature"][:] == t
 
         if cond.sum() != 1:
-            raise Exception(
+            raise RuntimeError(
                 "kappa-m*.hdf5 file {0}: Requested t = {1:.2f} not "
                 "found.".format(file_path, t)
             )
 
         ((t_idx,),) = np.where(cond)
 
+        lws = None
+
         if "qpoint" in f:
             # gamma has shape (n_t, n_q, 3 n_a).
 
             for q_idx, q_pos in enumerate(f["qpoint"]):
                 if np.allclose(q_pos, 0.0, atol=ZERO_TOLERANCE):
-                    return f["gamma"][t_idx, q_idx]
+                    lws = f["gamma"][t_idx, q_idx]
         else:
             # gamma has shape (n_t, 3 n_a).
-            return f["gamma"][t_idx]
+            lws = f["gamma"][t_idx]
 
-        raise Exception(
+        if lws is not None:
+            # The "gamma" key in the kappa-m*.hdf5 files is defined such
+            # that the phonon linewidths are 2 \Gamma.
+
+            return 2.0 * lws
+
+        raise RuntimeError(
             "kappa-m*.hdf5 file {0}: Gamma-point linewidths not found."
             "".format(file_path)
         )
@@ -429,10 +437,14 @@ def hf_dielectric_and_born_from_born(file_path, struct):
     """
 
     if not _PHONOPY_AVAILABLE:
-        raise Exception(
+        raise RuntimeError(
             "read_hf_dielectric_and_born_from_born() requires the "
             "phonopy.file.IO.parse_born function."
         )
 
     born_data = parse_BORN(struct.to_phonopy_atoms(), filename=file_path)
-    return (born_data["dielectric"], born_data["born"])
+
+    return (
+        np.asarray(born_data["dielectric"], dtype=np.float64),
+        np.asarray(born_data["born"], dtype=np.float64),
+    )

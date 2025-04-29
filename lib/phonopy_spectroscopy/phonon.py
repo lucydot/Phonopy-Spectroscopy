@@ -18,7 +18,7 @@ import warnings
 
 import numpy as np
 
-from .constants import ZERO_TOLERANCE
+from .constants import VASP_TO_THZ, ZERO_TOLERANCE
 from .irreps import Irreps
 from .structure import Structure
 
@@ -27,6 +27,20 @@ from .utility.numpy_helper import (
     np_readonly_view,
     np_check_shape,
 )
+
+_PHONOPY_AVAILABLE = False
+
+try:
+    from phonopy import Phonopy
+    from phonopy.harmonic.dynmat_to_fc import DynmatToForceConstants
+
+    _PHONOPY_AVAILABLE = True
+except ImportError:
+    warnings.warn(
+        "Imports from phonopy failed - some functions require phonopy "
+        "and will raise exceptions if it is not installed.",
+        RuntimeWarning,
+    )
 
 
 # ------------------
@@ -97,8 +111,16 @@ class GammaPhonons:
                 raise ValueError("Linewidths cannot be negative.")
 
         if irreps is not None:
-            if irreps.band_indices_flat().max() >= (3 * n_a):
-                raise Exception(
+            ir_band_inds_flat = irreps.band_indices_flat()
+
+            if len(ir_band_inds_flat) != 3 * n_a:
+                raise ValueError(
+                    "If supplied, irreps must assign all bands to "
+                    "irrep groups."
+                )
+
+            if ir_band_inds_flat.max() >= (3 * n_a):
+                raise RuntimeError(
                     "One or more band indices in irreps are not "
                     "compatible with the number of modes in the "
                     "phonon calculation."
@@ -134,6 +156,11 @@ class GammaPhonons:
     def num_modes(self):
         """int : Number of modes."""
         return len(self._freqs)
+
+    @property
+    def has_linewidths(self):
+        """bool : `True` if linewidths are available, otherwise `False`."""
+        return self._lws is not None
 
     @property
     def has_irreps(self):
@@ -177,7 +204,7 @@ class GammaPhonons:
                 if len(subset_band_inds) == 3:
                     return np.array(subset_band_inds, dtype=int)
 
-            raise Exception(
+            raise RuntimeError(
                 "Unable to select a set of acoustic modes spanning "
                 "complete irrep groups. This may indicate an issue "
                 "with the phonon calculation."
@@ -200,6 +227,67 @@ class GammaPhonons:
 
         sqrt_m = np.sqrt(self._struct.atomic_masses)
         return self._evecs / sqrt_m[np.newaxis, :, np.newaxis]
+
+    def hessian(self):
+        r"""Calculate the Hessian matrix (force constants) for the
+        Gamma-point phonon modes.
+
+        Returns
+        -------
+        h : numpy.ndarray
+            Hessian in eV / Ang^2 (shape: `(3N, 3N)`).
+
+        Notes
+        -----
+        This function requires the `phonopy` package.
+        """
+
+        if not _PHONOPY_AVAILABLE:
+            raise RuntimeError(
+                "GammaPhonons.hessian() requires the "
+                "phonopy.Phonopy and phonopy.phonon.DynmatToFc class."
+            )
+
+        n_a = self._struct.num_atoms
+
+        evals = np.copysign((self._freqs / VASP_TO_THZ) ** 2, self._freqs)
+
+        evec_mat = np.zeros((3 * n_a, 3 * n_a), dtype=np.complex128)
+
+        for i, evec in enumerate(self._evecs):
+            evec_mat[:, i].real = evec.flat
+
+        # Construct a Phonopy object to obtain the primitive cell and
+        # "supercell".
+
+        phonopy = Phonopy(self._struct.to_phonopy_atoms(), np.eye(3, 3))
+
+        # Construct a DynmatToForceConstants object to reverse transform
+        # the dynamical matrix to the corresponding force constants.
+
+        d2f = DynmatToForceConstants(phonopy.primitive, phonopy.supercell)
+
+        d2f.create_dynamical_matrices(
+            eigenvalues=[evals], eigenvectors=[evec_mat]
+        )
+
+        d2f.run()
+
+        fc2 = d2f.force_constants
+
+        # "Flatten" fc2 to a (3 n_a) x (3 n_a) matrix.
+
+        h = np.zeros((3 * n_a, 3 * n_a), dtype=np.float64)
+
+        for i_at in range(n_a):
+            i_fc2 = 3 * i_at
+
+            for j_at in range(n_a):
+                j_fc2 = 3 * j_at
+
+                h[i_fc2 : i_fc2 + 3, j_fc2 : j_fc2 + 3] = fc2[i_at, j_at]
+
+        return h
 
     def to_dict(self):
         """Return the internal data as a dictionary of native Python

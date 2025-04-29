@@ -117,6 +117,40 @@ def compare_gamma_phonons(gamma_ph_cmp, gamma_ph_ref):
     )
 
 
+def compare_infrared_calculators(calc_cmp, calc_ref):
+    """Compare two `InfraredCalculator` objects and determine whether
+    they hold identical data.
+
+    Parameters
+    ----------
+    calc_cmp, calc_ref : InfraredCalculator
+        `InfraredCalculator` objects to compare.
+
+    Returns
+    -------
+    equiv : bool
+        `True` if `calc_cmp` is equivalant to `calc_ref`, otherwise
+        `False`.
+    """
+
+    if not compare_gamma_phonons(
+        calc_ref.gamma_phonons, calc_cmp.gamma_phonons
+    ):
+        return False
+
+    if not np.allclose(
+        calc_cmp.born_effective_charges, calc_ref.born_effective_charges
+    ):
+        return False
+
+    if calc_cmp.epsilon_inf is not None:
+        return calc_ref.epsilon_inf is not None and np.allclose(
+            calc_cmp.epsilon_inf, calc_ref.epsilon_inf
+        )
+    else:
+        return calc_ref.born_charges is None
+
+
 def compare_finite_displacement_raman_tensor_calculators(
     fd_calc_cmp, fd_calc_ref
 ):

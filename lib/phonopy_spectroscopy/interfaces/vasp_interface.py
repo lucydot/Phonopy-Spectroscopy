@@ -15,6 +15,8 @@
 # -------
 
 
+import warnings
+
 import xml.etree.ElementTree as ET
 
 import numpy as np
@@ -62,7 +64,7 @@ def structure_from_poscar(file_path):
         s_f = float(next(f).strip())
 
         if s_f < 0.0:
-            raise Exception(
+            raise RuntimeError(
                 "POSCAR file {0}: Speficiation of the cell volume with "
                 "a negative scaling factor is currently not supported."
                 "".format(file_path)
@@ -77,7 +79,7 @@ def structure_from_poscar(file_path):
         v_latt = s_f * np.array(v_latt, dtype=np.float64)
 
         if np.isclose(np.linalg.norm(v_latt, axis=0), ZERO_TOLERANCE).any():
-            raise Exception(
+            raise RuntimeError(
                 "POSCAR file {0}: One or more lattice vectors has zero "
                 "length.".format(file_path)
             )
@@ -88,7 +90,7 @@ def structure_from_poscar(file_path):
         at_cnts = [int(item) for item in next(f).strip().split()]
 
         if len(at_syms) != len(at_cnts):
-            raise Exception(
+            raise RuntimeError(
                 "POSCAR file {0}: Numbers of atomic symbols and atom "
                 "counts on Line 6/7 do not match.".format(file_path)
             )
@@ -152,7 +154,7 @@ def structure_to_poscar(
     """
 
     if struct.num_atoms == 0:
-        raise Exception("Cannot write an empty structure to a POSCAR file.")
+        raise ValueError("Cannot write an empty structure to a POSCAR file.")
 
     with open(file_path, "w") as f:
         # Line 1: system name.
@@ -225,7 +227,7 @@ def _parse_dielectric_constant(file_path, parent):
     elements = parent.findall("./v")
 
     if len(elements) != 3:
-        raise Exception(
+        raise RuntimeError(
             "vasprun.xml file {0}: Unexpected number of vectors in "
             "dielectric constant element.".format(file_path)
         )
@@ -259,7 +261,7 @@ def _parse_dielectric_function(file_path, parent):
     eps_im = parent.findall("./imag/array")
 
     if len(eps_re) != 1 or len(eps_im) != 1:
-        raise Exception(
+        raise RuntimeError(
             "vasprun.xml file {0}: Multiple or missing real/imag child "
             "elements in parent dielectric function element.".format(file_path)
         )
@@ -275,7 +277,7 @@ def _parse_dielectric_function(file_path, parent):
             fields, ["energy", "xx", "yy", "zz", "xy", "yz", "zx"]
         ):
             if f.text != h:
-                raise Exception(
+                raise RuntimeError(
                     "vasprun.xml file {0}: Unexpected column headings "
                     "in dielectric function arrays.".format(file_path)
                 )
@@ -287,7 +289,7 @@ def _parse_dielectric_function(file_path, parent):
     eps_im_rows = eps_im.findall("./set/r")
 
     if len(eps_im_rows) != len(eps_re_rows) or len(eps_re_rows) == 0:
-        raise Exception(
+        raise RuntimeError(
             "vasprun.xml file {0}: Real/imaginary dielectric function "
             "arrays of unequal or zero length.".format(file_path)
         )
@@ -305,7 +307,7 @@ def _parse_dielectric_function(file_path, parent):
     # Check real and imaginary parts are on the same energy axis.
 
     if not np.allclose(eps_re[:, 0], eps_im[:, 0]):
-        raise Exception(
+        raise RuntimeError(
             "vasprun.xml file {0}: Real/imaginary dielectric function "
             "arrays have different energy axes.".format(file_path)
         )
@@ -332,7 +334,9 @@ def _parse_dielectric_function(file_path, parent):
     return (e, eps_e)
 
 
-def dielectric_from_vasprun_xml(file_path, response_func_type="d-d"):
+def dielectric_from_vasprun_xml(
+    file_path, response_func_type="d-d", response_func_idx=0
+):
     """Read high-frequency dielectric constants or energy-dependent
     dielectric functions from a vasprun.xml file.
 
@@ -344,6 +348,10 @@ def dielectric_from_vasprun_xml(file_path, response_func_type="d-d"):
         For energy-dependent response functions, sets which type of
         response function to return: density-density (`"d-d"`) or
         current-current (`"c-c"`) (default: `"d-d"`).
+    response_func_idx : int, optional
+        For vasprun.xml files where response functions are not tagged
+        with comments indicating the type, specifies the zero-based
+        index of the function to return (default: 0).
 
     Returns
     -------
@@ -381,7 +389,7 @@ def dielectric_from_vasprun_xml(file_path, response_func_type="d-d"):
             if len(elements) == 1:
                 eps_hf = _parse_dielectric_constant(file_path, elements[0])
             else:
-                raise Exception(
+                raise RuntimeError(
                     "vasprun.xml file {0}: Multiple high-frequency "
                     "dielectric constant calculations of the same "
                     "type.".format(file_path)
@@ -393,7 +401,7 @@ def dielectric_from_vasprun_xml(file_path, response_func_type="d-d"):
             np.array([eps_hf], dtype=np.float64),
         )
 
-    # Look for frequency-dependent dielectric constant calculations.
+    # Look for frequency-dependent dielectric function calculations.
     # Depending on the calculations there may be "density-density" and
     # "current-current" response functions. Which of these is returned
     # is set by an optional argument that defaults to the former.
@@ -414,7 +422,25 @@ def dielectric_from_vasprun_xml(file_path, response_func_type="d-d"):
             ):
                 return _parse_dielectric_function(file_path, element)
 
-    raise Exception(
+    # In some vasprun.xml files, the response functions are not tagged
+    # with comments indicating their type. In this case, select based
+    # on the index specified by response_func_idx.
+
+    if len(elements) > 0:
+        if response_func_idx < len(elements):
+            return _parse_dielectric_function(
+                file_path, elements[response_func_idx]
+            )
+        else:
+            raise RuntimeError(
+                "vasprun.xml file {0} : response_func_idx={1} is not "
+                "compatible with the number of dielectric functions "
+                "found in the file ({2}).".format(
+                    file_path, response_func_idx, len(elements)
+                )
+            )
+
+    raise RuntimeError(
         "vasprun.xml file {0} : No dielectric constants/functions "
         "found. This may be because the type of calculation is not "
         "currently supported.".format(file_path)

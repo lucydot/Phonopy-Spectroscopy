@@ -27,7 +27,7 @@ from ..constants import (
 )
 
 from ..distributions import lorentzian, phonon_occupation_number
-from ..spectrum import GammaPhononSpectrumBase
+from ..spectrum_base import GammaPhononSpectrumBase
 from ..units import nm_to_thz
 
 from ..utility.numpy_helper import (
@@ -245,7 +245,7 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
             intensity modulation envelope (default: None)
         spectrum_type : {"stokes", "anti-stokes", "both"}
             Type of spectrum (default: "stokes").
-        **kwargs : any, optional
+        **kwargs : any
             Keyword arguments to the `GammaPhononSpectrumBase`
             constructor.
 
@@ -330,9 +330,8 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
 
         ints = modulate_intensities(freqs, ints, w, t)
 
-        # Call the SpectrumBase constructor to handle "x-axis"-related
-        # intialisation. This also validates freqs, lws and irreps, and
-        # the optional x_range, x_res and units parameters.
+        # Call the GammaPhononSpectrumBase constructor to handle
+        # "x-axis"-related intialisation.
 
         super(RamanSpectrumBase, self).__init__(
             freqs, lws, irrep_syms=irrep_syms, **kwargs
@@ -363,7 +362,7 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
 
             for sp_idx in range(self._ints.shape[1]):
                 for f, i, lw in zip(
-                    self._freqs, self._ints[:, sp_idx], self._lws
+                    self.frequencies, self._ints[:, sp_idx], self.linewidths
                 ):
                     sp[:, sp_idx] += lorentzian(x, i, f, lw)
 
@@ -479,7 +478,7 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
         return pd.DataFrame(d)
 
     def spectrum(self):
-        """Return the spectrum as a Pandas `DataFrame`.
+        """Return the simulated spectrum as a Pandas `DataFrame`.
 
         Returns
         -------
@@ -503,6 +502,9 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
 
 
 class RamanSpectrum1D(RamanSpectrumBase):
+    """Class for generating simulated 1D Raman spectra from sets of
+    frequencies, band intensities and linewidths."""
+
     def __init__(
         self,
         freqs,
@@ -515,6 +517,7 @@ class RamanSpectrum1D(RamanSpectrumBase):
         x_range=None,
         x_res=None,
         x_units="thz",
+        **kwargs
     ):
         """Create a new instance of the `RamanSpectrum1D` class.
 
@@ -544,6 +547,8 @@ class RamanSpectrum1D(RamanSpectrumBase):
             determined).
         x_units : str or None, optional
             x-axis units of simulated spectrum (default: `"thz"`).
+        **kwargs : any
+            Keyword arguments to parent class constructor(s).
         """
 
         # Perform base class initialisation.
@@ -557,8 +562,9 @@ class RamanSpectrum1D(RamanSpectrumBase):
             t=t,
             spectrum_type=spectrum_type,
             x_range=x_range,
-            x_res=x_range,
+            x_res=x_res,
             x_units=x_units,
+            **kwargs
         )
 
         # Check supplied intensities are 1D.
@@ -598,6 +604,9 @@ class RamanSpectrum1D(RamanSpectrumBase):
 
 
 class RamanSpectrum2D(RamanSpectrumBase):
+    """Class for generating simulated 2D Raman spectra from sets of
+    frequencies, band intensities and linewidths."""
+
     def __init__(
         self,
         freqs,
@@ -614,6 +623,7 @@ class RamanSpectrum2D(RamanSpectrumBase):
         x_units="thz",
         d2_unit_plot_label=None,
         d2_col_hdrs=None,
+        **kwargs
     ):
         """Create a new instance of the `RamanSpectrum2D` class.
 
@@ -653,7 +663,10 @@ class RamanSpectrum2D(RamanSpectrumBase):
         d2_col_hdrs : array_like or None, optional
             Column headings for `pandas.DataFrame` objects (shape:
             `(M,)`; default: automatically determined).
+        **kwargs : any
+            Keyword arguments to parent class constructor(s).
         """
+
         # Pass args/kwargs through to base class.
 
         super(RamanSpectrum2D, self).__init__(
@@ -667,6 +680,7 @@ class RamanSpectrum2D(RamanSpectrumBase):
             x_range=x_range,
             x_res=x_res,
             x_units=x_units,
+            **kwargs
         )
 
         d2_axis_vals = np_asarray_copy(d2_axis_vals)
@@ -688,7 +702,8 @@ class RamanSpectrum2D(RamanSpectrumBase):
 
             if not np_check_shape(d2_col_hdrs, (self._ints.shape[1],)):
                 raise ValueError(
-                    "If supplied, d2_col_hdrs must be an array_like with shape `(M,)`."
+                    "If supplied, d2_col_hdrs must be an array_like "
+                    "with shape `(M,)`."
                 )
 
         self._d2_axis_vals = d2_axis_vals
@@ -732,22 +747,22 @@ class RamanSpectrum2D(RamanSpectrumBase):
 
     @property
     def y_unit_text_label(self):
-        """str : y-axis label suitable for plain-text output."""
+        """str : y-axis unit label suitable for plain-text output."""
         return self._d2_unit_text_label
 
     @property
     def y_unit_plot_label(self):
-        """str: y-axis label suitable for plotting (may contain TeX
+        """str: y-axis unit label suitable for plotting (may contain TeX
         strings.)"""
         return self._d2_unit_plot_label
 
     @property
     def z_unit_text_label(self):
-        """str : z-axis label suitable for plain-text output."""
+        """str : z-axis unit label suitable for plain-text output."""
         return self._intensity_unit_text_label
 
     @property
     def z_unit_plot_label(self):
-        """str : z-axis label suitable for plotting (may contain TeX
-        strings)."""
+        """str : z-axis unit label suitable for plotting (may contain
+        TeX strings)."""
         return self._intensity_unit_plot_label

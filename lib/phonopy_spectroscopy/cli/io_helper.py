@@ -6,7 +6,8 @@
 # ---------
 
 
-"""This module contains helper routines for input/output."""
+"""Helper routines for input/output for implementing the command-line
+interface."""
 
 
 # -------
@@ -87,7 +88,7 @@ def raman_fd_read_dielectrics_vasp(file_list, num_bands, num_steps, e_tol=0.1):
             # calculations were performed with different parameters and
             # is likely a (user) mistake.
 
-            raise Exception(
+            raise RuntimeError(
                 "Input file {0} : Number of energies {1:,} differs "
                 "from reference {2:,}.".format(f, len(e), num_pts)
             )
@@ -96,7 +97,7 @@ def raman_fd_read_dielectrics_vasp(file_list, num_bands, num_steps, e_tol=0.1):
             d_e = np.mean(e[1:] - e[:-1])
 
             if np.abs(d_e - d_e_ref) > e_tol:
-                raise Exception(
+                raise RuntimeError(
                     "Input file {0} : Difference in energy spacing from "
                     "reference is {1:.3f} eV > {2:.3f} eV."
                     "".format(f, d_e, e_tol)
@@ -145,7 +146,7 @@ def df_to_txt(df, file_path, col_fmts, preamble_lines=None):
     """
 
     if len(col_fmts) != len(df.columns):
-        raise Exception(
+        raise ValueError(
             "col_fmts must contain a format specifier for each column in df."
         )
 
@@ -175,6 +176,86 @@ def df_to_txt(df, file_path, col_fmts, preamble_lines=None):
             ]
 
             f.write("  " + "  ".join(row) + "\n")
+
+
+def infrared_peak_table_to_txt(dielectric_func, file_path):
+    """Write a peak table from a `ScalarInfraredDielectricFunction` or
+    `TensorInfraredDielectricFunction` object to a plain-text file.
+
+    Parameters
+    ----------
+    dielectric_func : ScalarInfraredDielectricFunction or TensorInfraredDielectricFunction
+        Dielectric function.
+    file_path : str
+        File to write data to.
+    """
+
+    df = dielectric_func.peak_table()
+
+    preamble_lines = [
+        "x : {0}".format(dielectric_func.x_unit_text_label),
+        "y : {0}".format(
+            dielectric_func.mode_oscillator_strength_unit_text_label
+        ),
+    ]
+
+    col_fmts = ["{0: >12.5f}", "{0: >10.5f}", "{0: >5}"]
+    col_fmts += ["{0: >12.5e}"] * (len(df.columns) - 3)
+
+    df_to_txt(df, file_path, col_fmts, preamble_lines=preamble_lines)
+
+
+def tensor_infrared_spectrum_to_txt(dielectric_func, file_path):
+    """Write the dielectric function from a
+    `TensorInfraredDielectricFunction` object to a plain-text file.
+
+    Parameters
+    ----------
+    dielectric_func : TensorInfraredDielectricFunction
+        Dielectric function.
+    file_path : str
+        File to write data to.
+    """
+
+    df = dielectric_func.spectrum()
+
+    preamble_lines = [
+        "x : {0}".format(dielectric_func.x_unit_text_label),
+        "y : {0}".format(dielectric_func.epsilon_unit_text_label),
+    ]
+
+    col_fmts = ["{0: >12.5f}"] + ["{0: >12.5e}"] * (len(df.columns) - 1)
+
+    df_to_txt(df, file_path, col_fmts, preamble_lines=preamble_lines)
+
+
+def scalar_infrared_spectrum_to_txt(dielectric_func, file_path):
+    """Write the dielectric function and derived quantities from a
+    `ScalarInfraredDielectricFunction` object to a plain-text file.
+
+    Parameters
+    ----------
+    dielectric_func : ScalarInfraredDielectricFunction
+        Dielectric function.
+    file_path : str
+        File to write data to.
+    """
+
+    df = dielectric_func.spectrum()
+
+    preamble_lines = [
+        "x : {0}".format(dielectric_func.x_unit_text_label),
+        "y (eps) : {0}".format(dielectric_func.epsilon_unit_text_label),
+        "y (alpha) : {0}".format(
+            dielectric_func.absorption_coefficient_unit_text_label
+        ),
+        "y (R) : dimensionless",
+        "y (L) : dimensionless",
+    ]
+
+    col_fmts = ["{0: >12.5f}"] + ["{0: >12.5e}"] * (len(df.columns) - 1)
+
+    df_to_txt(df, file_path, col_fmts, preamble_lines=preamble_lines)
 
 
 def _raman_get_preamble_lines(sp):

@@ -71,12 +71,12 @@ def get_distance_unit_conversion_factor(unit_from, unit_to):
     unit_from = unit_from.lower()
 
     if unit_from not in _DISTANCE_UNIT_DATA:
-        raise Exception('Unsupported unit_from="{0}".'.format(unit_from))
+        raise ValueError('Unsupported unit_from="{0}".'.format(unit_from))
 
     unit_to = unit_to.lower()
 
     if unit_to not in _DISTANCE_UNIT_DATA:
-        raise Exception('Unsupported unit_to="{0}".'.format(unit_to))
+        raise ValueError('Unsupported unit_to="{0}".'.format(unit_to))
 
     # Determine conversion factor.
 
@@ -151,12 +151,12 @@ def get_frequency_unit_text_label(unit):
         if k in _FREQUENCY_UNIT_DATA:
             return _FREQUENCY_UNIT_DATA[k]["text_label"]
 
-    raise Exception('Unsupported unit="{0}".'.format(unit))
+    raise ValueError('Unsupported unit="{0}".'.format(unit))
 
 
 def get_frequency_unit_plot_label(unit):
-    """Return a label for `unit` suitable for plots, which may contain
-    TeX strings).
+    """Return a label for `unit` suitable for plotting, which may
+    contain TeX strings.
 
     Parameters
     ----------
@@ -175,7 +175,7 @@ def get_frequency_unit_plot_label(unit):
         if k in _FREQUENCY_UNIT_DATA:
             return _FREQUENCY_UNIT_DATA[k]["plot_label"]
 
-    raise Exception('Unsupported unit="{0}".'.format(unit))
+    raise ValueError('Unsupported unit="{0}".'.format(unit))
 
 
 def get_frequency_unit_conversion_factor(unit_from, unit_to):
@@ -196,12 +196,12 @@ def get_frequency_unit_conversion_factor(unit_from, unit_to):
     unit_from = unit_from.lower()
 
     if unit_from not in _FREQUENCY_UNIT_DATA:
-        raise Exception('Unsupported unit_from "{0}".'.format(unit_from))
+        raise ValueError('Unsupported unit_from "{0}".'.format(unit_from))
 
     unit_to = unit_to.lower()
 
     if unit_to not in _FREQUENCY_UNIT_DATA:
-        raise Exception('Unsupported unit_to "{0}".'.format(unit_to))
+        raise ValueError('Unsupported unit_to "{0}".'.format(unit_to))
 
     # Determine conversion factor.
 
@@ -229,7 +229,7 @@ def convert_frequency_units(vals, unit_from, unit_to):
 
     vals, n_dim_add = np_expand_dims(np.asarray(vals), (None,))
 
-    vals *= get_frequency_unit_conversion_factor(unit_from, unit_to)
+    vals = vals * get_frequency_unit_conversion_factor(unit_from, unit_to)
 
     return vals if n_dim_add == 0 else vals[0]
 

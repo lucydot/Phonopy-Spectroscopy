@@ -10,9 +10,9 @@ The software package consists of a Python package, `phonopy_spectroscopy`, and c
 The current status of the development code is as follows:
 
 * The "backend" Python API has been completely rewritten with a new object model.
+* The infrared (IR) capability has been rewritten around computing the IR dielectric function, with options to account for different measurement geometries including powder averaging.
 * The Raman capability has been expanded to include complete functionality for simulating single-crystal and powder Raman experiments, including with energy-dependent Raman tensors.
 * Unit tests have been implemented with reasonable code coverage.
-* The infrared (IR) capability has been temporarily removed pending a rewrite.
 * The command-line programs and associated API have been temporarily removed pending a rewrite.
 
 

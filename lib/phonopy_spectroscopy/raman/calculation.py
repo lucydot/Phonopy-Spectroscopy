@@ -6,9 +6,9 @@
 # ---------
 
 
-"""This model provides a simplified API for combining Gamma-point phonon
-and Raman calculations to generate simulated spectra through a
-high-level `RamanCalculation` object."""
+"""High-level `RamanCalculation` object providing a simplified API for
+combining Gamma-point phonon and Raman tensor calculations to generate
+simulated spectra."""
 
 
 # -------
@@ -20,11 +20,7 @@ import warnings
 
 import numpy as np
 
-from ..constants import ZERO_TOLERANCE
-from ..phonon import GammaPhonons
-from ..units import nm_to_ev
-
-from .instrument import Polarisation
+from ..instrument import Polarisation
 
 from .intensity import (
     calculate_single_crystal_raman_intensities,
@@ -33,6 +29,10 @@ from .intensity import (
 
 from .spectrum import RamanSpectrum1D, RamanSpectrum2D
 from .tensors import RamanTensors
+
+from ..constants import ZERO_TOLERANCE
+from ..phonon import GammaPhonons
+from ..units import nm_to_ev
 
 from ..utility.geometry import (
     rotation_matrix_from_vectors,
@@ -224,7 +224,7 @@ class RamanCalculation:
         if lw is None:
             # Default value.
 
-            lw = 1.0 if self._gamma_ph.linewidths is not None else 0.5
+            lw = 1.0 if self._gamma_ph.has_linewidths else 0.5
         else:
             if lw < ZERO_TOLERANCE:
                 raise ValueError("lw cannot be zero or negative.")
@@ -232,7 +232,7 @@ class RamanCalculation:
         params["linewidths"] = (
             lw * self.linewidths[band_inds]
             if self.linewidths is not None
-            else np.array([lw] * len(band_inds), dtype=np.float64)
+            else lw * np.ones((len(band_inds),), dtype=np.float64)
         )
 
         # Irreps.
@@ -358,8 +358,8 @@ class RamanCalculation:
         Parameters
         ----------
         hkl : tuple of int
-            Miller index of the crystal surface to orient along the
-            incident direction.
+            Miller index of crystal surface to orient along incident
+            direction.
         geom : Geometry
             Measurement geometry.
         i_pol, s_pol : str, Polarisation or list of Polarisation
@@ -379,7 +379,7 @@ class RamanCalculation:
         lw : float or None, optional
             Uniform linewidth or scale factor for calculated linewidths
             (defaults: 0.5 THz uniform linewidth or scale factor of
-            1.0), depending on whether calculation has linewidths.
+            1.0, depending on whether calculation has linewidths).
         band_grp_inds : array_like or None, optional
             Indices of "band groups" to include in the calculation
             (default: all groups). Groups are defined by irreps if
@@ -434,7 +434,7 @@ class RamanCalculation:
             rot, n_dim_add = np_expand_dims(np.asarray(rot), (None, 3, 3))
 
             if not rot.shape[0] > 1 and not params["single_polarisation"]:
-                raise Exception(
+                raise RuntimeError(
                     "Multiple incident/scattered polarisations cannot be "
                     "combined with multiple crystal rotations."
                 )
@@ -442,7 +442,7 @@ class RamanCalculation:
             is_2d = is_2d or n_dim_add == 0
 
         # If the underlying structure has a conventional cell defined,
-        # assume the Miller indices are speficied in terms of this and
+        # assume the Miller index is speficied in terms of this and
         # not the primitive cell (if different).
 
         r = rotation_matrix_from_vectors(
@@ -510,7 +510,7 @@ class RamanCalculation:
                 "d2_axis_vals" not in kwargs
                 or "d2_unit_text_label" not in kwargs
             ):
-                raise Exception(
+                raise RuntimeError(
                     "Multiple polarisations/rotations produce 2D "
                     "spectra and require the optional d2_axis_vals and "
                     "d2_unit_text_label keywords to be specified."
@@ -557,8 +557,8 @@ class RamanCalculation:
         Parameters
         ----------
         hkl : tuple of int
-            Miller index of the crystal surface to orient along the
-            incident direction.
+            Miller index of crystal surface to orient along incident
+            direction.
         geom : Geometry
             Measurement geometry.
         i_pol, s_pol : str or Polarisation
@@ -600,7 +600,9 @@ class RamanCalculation:
 
         if i_pol_str == "rot":
             if s_pol_str == "rot":
-                raise Exception('i_pol and s_pol cannot both be set to "rot".')
+                raise RuntimeError(
+                    'i_pol and s_pol cannot both be set to "rot".'
+                )
 
             i_pol = Polarisation.from_angles(geom.incident_direction, angles)
 
@@ -637,8 +639,8 @@ class RamanCalculation:
         Parameters
         ----------
         hkl : tuple of int
-            Miller index of the crystal surface to orient along the
-            incident direction.
+            Miller index of crystal surface to orient along the incident
+            direction.
         geom : Geometry
             Measurement geometry.
         i_pol, s_pol : str or Polarisation
@@ -669,7 +671,7 @@ class RamanCalculation:
         """
 
         if "rot" in kwargs and kwargs["rot"] is not None:
-            raise ValueError(
+            raise RuntimeError(
                 "The rot keyword to single_crystal is not valid for a "
                 "crystal-rotation experiment - specify the required "
                 "rotation(s) with phi_start, phi_end and phi_step "
@@ -717,15 +719,15 @@ class RamanCalculation:
         geom,
         i_pol,
         s_pol,
-        pref_orient_hkl=None,
-        pref_orient_eta=0.0,
+        po_hkl=None,
+        po_eta=0.0,
         w=None,
         t=None,
         e_rt=None,
         lw=None,
         band_grp_inds=None,
         method="best",
-        lebedev_prec=5,
+        lc_prec=5,
         **kwargs
     ):
         """Simulate a powder Raman spectrum with optional preferred
@@ -739,9 +741,9 @@ class RamanCalculation:
             Polarisation(s) of incident and scattered light. The
             scattered polarisation may also be specified by one of
             {"parallel", "cross", "sum"}.
-        pref_orient_hkl : tuple of int or None, optional
-            Miller index of the preferred orientation (default: None).
-        pref_orient_eta : float, optional
+        po_hkl : tuple of int or None, optional
+            Miller index of preferred orientation (default: None).
+        po_eta : float, optional
             Fraction of crystallites with the preferred orientation
             (default: 0.0)
         w, t : float or None, optional
@@ -754,18 +756,14 @@ class RamanCalculation:
         lw : float or None, optional
             Uniform linewidth or scale factor for calculated linewidths
             (defaults: 0.5 THz uniform linewidth or scale factor of
-            1.0), depending on whether calculation has linewidths.
+            1.0, depending on whether calculation has linewidths).
         band_grp_inds : array_like or None, optional
             Indices of "band groups" to include in the calculation
             (default: all groups). Groups are defined by irreps if
             available, or the band indices in the calculation otherwise.
-        **kwargs : any
-            Keyword arguments to the `RamanSpectrum` constructor (some
-            of these may be required depending on other parameters - see
-            notes).
         method : {"nquad", "lebedev+circle", "best"}, optional
             Method for powder averaging (default: `"best"`).
-        lebedev_prec : int, optional
+        lc_prec : int, optional
             Precision of the Lebedev + circle numerical quadrature
             scheme (default: 5).
         **kwargs : any
@@ -815,7 +813,7 @@ class RamanCalculation:
             # numerical methods being used, raise a warning.
 
             may_use_analytical = (
-                np.abs(pref_orient_eta) < ZERO_TOLERANCE
+                np.abs(po_eta) < ZERO_TOLERANCE
                 and not np.iscomplex(params["raman_tensors"]).any()
             )
 
@@ -838,11 +836,11 @@ class RamanCalculation:
                         RuntimeWarning,
                     )
 
-        pref_orient_surf_norm = None
+        po_surf_norm = None
 
-        if pref_orient_hkl is not None:
-            pref_orient_surf_norm = self._gamma_ph.structure.real_space_normal(
-                pref_orient_hkl, conv=True
+        if po_hkl is not None:
+            po_surf_norm = self._gamma_ph.structure.real_space_normal(
+                po_hkl, conv=True
             )
 
         ints = np.zeros(
@@ -864,10 +862,10 @@ class RamanCalculation:
                 params["geometry"],
                 i_pol,
                 s_pol,
-                pref_orient_eta=pref_orient_eta,
-                pref_orient_surf_norm=pref_orient_surf_norm,
+                po_eta=po_eta,
+                po_surf_norm=po_surf_norm,
                 method=method,
-                lebedev_prec=lebedev_prec,
+                lc_prec=lc_prec,
             )
 
         ints = np.array(ints, dtype=np.float64).T
@@ -877,7 +875,7 @@ class RamanCalculation:
                 "d2_axis_vals" not in kwargs
                 or "d2_unit_text_label" not in kwargs
             ):
-                raise Exception(
+                raise RuntimeError(
                     "Multiple polarisations produce 2D spectra and "
                     "require the optional d2_axis_vals and "
                     "d2_unit_text_label keywords to be specified."
@@ -954,7 +952,7 @@ class RamanCalculation:
         if chi_step is None:
             chi_step = 2.5
 
-            if "pref_orient_eta" in kwargs and kwargs["pref_orient_eta"] > 0.0:
+            if "po_eta" in kwargs and kwargs["po_eta"] > 0.0:
                 chi_step = 22.5
 
         angles = np.arange(chi_start, chi_end + chi_step / 10.0, chi_step)
@@ -971,7 +969,9 @@ class RamanCalculation:
 
         if i_pol_str == "rot":
             if s_pol_str == "rot":
-                raise Exception('i_pol and s_pol cannot both be set to "rot".')
+                raise RuntimeError(
+                    'i_pol and s_pol cannot both be set to "rot".'
+                )
 
             i_pol = Polarisation.from_angles(geom.incident_direction, angles)
 

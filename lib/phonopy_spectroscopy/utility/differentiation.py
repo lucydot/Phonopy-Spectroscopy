@@ -92,7 +92,7 @@ def central_difference_available_precs(n):
     if n in _CENTRAL_DIFF_COEFFS:
         return list(_CENTRAL_DIFF_COEFFS[n].keys())
 
-    raise Exception(
+    raise RuntimeError(
         "Central difference coefficients for derivatives of order "
         "n = {0} are not available.".format(n)
     )
@@ -126,7 +126,7 @@ def central_difference_coefficients(n, p):
     """
 
     if n not in _CENTRAL_DIFF_COEFFS or p not in _CENTRAL_DIFF_COEFFS[n]:
-        raise Exception(
+        raise RuntimeError(
             "Central difference coefficients for order = {0} and "
             "prec = {1} are not available.".format(n, p)
         )

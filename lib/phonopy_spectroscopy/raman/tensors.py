@@ -6,8 +6,7 @@
 # ---------
 
 
-"""Class for storing and interpolating energy-dependent Raman tensors.
-"""
+"""Class for storing and interpolating energy-dependent Raman tensors."""
 
 
 # -------
@@ -59,8 +58,8 @@ class RamanTensors:
             expand_order=(1, 0),
         )
 
-        if e is None:
-            e = [0.0]
+        if np.ndim(e) == 0:
+            e = np.array([e], dtype=np.float64)
 
         e = np_asarray_copy(e, dtype=np.float64)
 
@@ -149,7 +148,7 @@ class RamanTensors:
         # interpolate.
 
         if e < self._e.min() or e > self._e.max():
-            raise Exception(
+            raise RuntimeError(
                 "Requested E = {0:.3f} is outside the calculated "
                 "E = {1:.3f} to {2:.3f}.".format(
                     e, self._e.min(), self._e.max()
@@ -217,7 +216,7 @@ class RamanTensors:
             r_t_imag = np.asarray(d["raman_tensors"]["imag"], dtype=np.float64)
 
             if not np.equal(np.shape(r_t_imag), np.shape(r_t_real)).all():
-                raise Exception(
+                raise ValueError(
                     '"raman_tensors" key contains "real" and "imag" '
                     "keys with different array shapes."
                 )

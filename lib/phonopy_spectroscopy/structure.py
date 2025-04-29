@@ -6,8 +6,7 @@
 # ---------
 
 
-"""Class and routines for storing and working with crystal structures.
-"""
+"""Class and routines for storing and working with crystal structures."""
 
 
 # -------
@@ -133,7 +132,7 @@ def lookup_atomic_mass(symbol):
     """
 
     if not _PHONOPY_AVAILABLE:
-        raise Exception(
+        raise RuntimeError(
             "lookup_atomic_mass() requires the "
             "phonopy.atoms.atom_data attribute."
         )
@@ -424,16 +423,20 @@ class Structure:
         """
 
         if not _PHONOPY_AVAILABLE:
-            raise Exception(
+            raise RuntimeError(
                 "Structure.to_phonopy_atoms() requires the "
                 "phonopy.structure.PhonopyAtoms class."
             )
 
+        # The phonopy API uses the idiom "if x" to detect when a
+        # parameter x is set, which raises if x is a NumPy array with
+        # more than one element.
+
         return PhonopyAtoms(
-            cell=self.lattice_vectors,
-            scaled_positions=self.atom_positions,
-            symbols=self.atom_types,
-            masses=self.atomic_masses,
+            cell=self.lattice_vectors.tolist(),
+            scaled_positions=self.atom_positions.tolist(),
+            symbols=self.atom_types.tolist(),
+            masses=self.atomic_masses.tolist(),
         )
 
     def to_dict(self):

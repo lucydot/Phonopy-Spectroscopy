@@ -35,7 +35,7 @@ def np_asarray_copy(a, **kwargs):
     -------
     a_arr : numpy.ndarray
         a as an array.
-    **kwargs : dict
+    **kwargs : any
         Keyword args to `numpy.asarray`.
 
     Notes

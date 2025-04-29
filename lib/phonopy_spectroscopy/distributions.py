@@ -17,7 +17,7 @@
 import numpy as np
 
 from .constants import BOLTZMANN_CONSTANT_EV, PLANCK_CONSTANT_EV
-from .utility.numpy_helper import np_expand_dims
+from .utility.numpy_helper import np_check_shape, np_expand_dims
 
 
 # ----------
@@ -52,10 +52,8 @@ def gaussian(x, i, mu, sigma):
         G(x) = \frac{I}{\sqrt{2\pi} \sigma} \exp{-\frac{(x - \mu)^2}{2 \sigma^2}}
     """
 
-    x = np.asarray(x)
-
     return (i / (sigma * np.sqrt(2.0 * np.pi))) * np.exp(
-        -1.0 * (x - mu) ** 2 / (2 * sigma**2)
+        -1.0 * (np.asarray(x) - mu) ** 2 / (2 * sigma**2)
     )
 
 
@@ -68,7 +66,7 @@ def lorentzian(x, i, x0, gamma):
     x : array_like
         Values at which to evaluate the function.
     i, x0, gamma : float
-        Intensity, central frequency and width.
+        Intensity, central value and width.
 
     Returns
     -------
@@ -85,9 +83,63 @@ def lorentzian(x, i, x0, gamma):
         L(x) = \frac{I}{\pi} \frac{\frac{1}{2} \Gamma}{(x - x_0)^2 + (\frac{1}{2} \Gamma)^2}
     """
 
-    x = np.asarray(x)
+    return (i / np.pi) * (
+        (0.5 * gamma) / ((np.asarray(x) - x0) ** 2 + (0.5 * gamma) ** 2)
+    )
 
-    return (i / np.pi) * ((0.5 * gamma) / ((x - x0) ** 2 + (0.5 * gamma) ** 2))
+
+def dielectric_function(omega, s, omega_0, eta):
+    r"""Evaluate the complex dielectric function for a phonon mode with
+    intensity (oscillator strength) `s`, central value `x_0` and width
+    ("complex shift") `eta`.
+
+    Parameters
+    ----------
+    omega : array_like
+        Frequencies at which to evaluate the function.
+    s : array_like or float
+        Tensor (shape: `(3, 3)`) or scalar intensity.
+    omega_0, eta : float
+        Central value and linewidth.
+
+    Returns
+    -------
+    dielectric_func : numpy.ndarray
+        Complex dielectirc function evaluated at `x` (shape `(N,)` for
+        scalar `s`, or `(N, 3, 3)` for tensor `s`.
+
+    Notes
+    -----
+    The definition of the dielectric function is that used in the VASP
+    code:
+    https://www.vasp.at/wiki/index.php/Category:Dielectric_properties
+
+    .. math::
+        f(\omega) = \frac{s}{ \omega_0^2 - (\omega + i\eta)^2 }
+    """
+
+    # Denominator.
+
+    denom = omega_0**2 - (np.asarray(omega) + 1.0j * eta) ** 2
+
+    if np.ndim(s) == 0:
+        # Scalar oscillator strength.
+
+        return s / denom
+
+    if not np_check_shape(s, (3, 3)):
+        # Tensor oscillator strength.
+
+        raise ValueError(
+            "s must be a scalar or an array_like with shape (3, 3)."
+        )
+
+    dielectric_func = np.zeros((len(omega), 3, 3), dtype=np.complex128)
+
+    dielectric_func += s[np.newaxis, :, :]
+    dielectric_func /= denom[:, np.newaxis, np.newaxis]
+
+    return dielectric_func
 
 
 # -------------

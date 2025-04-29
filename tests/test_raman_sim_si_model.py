@@ -42,7 +42,7 @@ import numpy as np
 
 from phonopy_spectroscopy.structure import Structure
 
-from phonopy_spectroscopy.raman.instrument import Geometry, Polarisation
+from phonopy_spectroscopy.instrument import Geometry, Polarisation
 
 from phonopy_spectroscopy.raman.intensity import (
     calculate_single_crystal_raman_intensities,
@@ -244,7 +244,7 @@ class TestRamanSimulation(unittest.TestCase):
                 i_pol,
                 s_pol,
                 method="lebedev+circle",
-                lebedev_prec=5,
+                lc_prec=5,
             )
             for s_pol in s_pols
         ]
@@ -303,15 +303,15 @@ class TestRamanSimulation(unittest.TestCase):
         rho_pos = []
 
         for hkl in (1, 0, 0), (0, 1, 0), (0, 0, 1):
-            pref_orient_surf_norm = self._struct.real_space_normal(hkl)
+            po_surf_norm = self._struct.real_space_normal(hkl)
 
             ints_par_po = calculate_powder_raman_intensities(
                 self._r_t,
                 self._geom,
                 pol_par,
                 pol_par,
-                pref_orient_surf_norm=pref_orient_surf_norm,
-                pref_orient_eta=0.1,
+                po_surf_norm=po_surf_norm,
+                po_eta=0.1,
             )
 
             ints_per_po = calculate_powder_raman_intensities(
@@ -319,8 +319,8 @@ class TestRamanSimulation(unittest.TestCase):
                 self._geom,
                 pol_par,
                 pol_per,
-                pref_orient_surf_norm=pref_orient_surf_norm,
-                pref_orient_eta=0.1,
+                po_surf_norm=po_surf_norm,
+                po_eta=0.1,
             )
 
             rho_po = ints_per_po / ints_par_po
@@ -336,7 +336,7 @@ class TestRamanSimulation(unittest.TestCase):
             for j in range(i + 1, len(rho_pos)):
                 self.assertTrue((rho_pos[i] != rho_pos[j]).all())
 
-    def test_powder_raman_with_po_2(self):
+    def test_powder_with_po_2(self):
         """Test calculations of the parallel and perpenducular powder
         intensnties for a powder with a small preferred orientation
         along (0, 0, 1) with the two numerical integration approaches.
@@ -344,13 +344,12 @@ class TestRamanSimulation(unittest.TestCase):
 
         # This may need adjusting depending on the value of \eta.
 
-        lebedev_prec = 21
+        lc_prec = 21
 
         pol_par = Polarisation.from_direction("x")
         pol_per = Polarisation.from_direction("y")
 
-        pref_orient_surf_norm = self._struct.real_space_normal((0, 0, 1))
-        pref_orient_ref_axis = parse_direction("z")
+        po_surf_norm = self._struct.real_space_normal((0, 0, 1))
 
         for s_pol in pol_par, pol_per:
             ints_po_nquad = calculate_powder_raman_intensities(
@@ -358,8 +357,8 @@ class TestRamanSimulation(unittest.TestCase):
                 self._geom,
                 pol_par,
                 s_pol,
-                pref_orient_eta=0.1,
-                pref_orient_surf_norm=pref_orient_surf_norm,
+                po_eta=0.1,
+                po_surf_norm=po_surf_norm,
                 method="nquad",
             )
 
@@ -368,10 +367,10 @@ class TestRamanSimulation(unittest.TestCase):
                 self._geom,
                 pol_par,
                 s_pol,
-                pref_orient_eta=0.1,
-                pref_orient_surf_norm=pref_orient_surf_norm,
+                po_eta=0.1,
+                po_surf_norm=po_surf_norm,
                 method="lebedev+circle",
-                lebedev_prec=lebedev_prec,
+                lc_prec=lc_prec,
             )
 
             self.assertTrue(np.allclose(ints_po_lebedev, ints_po_nquad))

@@ -34,6 +34,8 @@ from io_helper import generate_fd_raman_dielectric_input_file_list
 
 from phonopy_spectroscopy.cli.io_helper import raman_fd_read_dielectrics_vasp
 
+from phonopy_spectroscopy.instrument import Geometry, Polarisation
+
 from phonopy_spectroscopy.interfaces.phonopy_interface import (
     gamma_phonons_from_phono3py,
 )
@@ -41,8 +43,6 @@ from phonopy_spectroscopy.interfaces.phonopy_interface import (
 from phonopy_spectroscopy.raman.finite_diff import (
     FiniteDisplacementRamanTensorCalculator,
 )
-
-from phonopy_spectroscopy.raman.instrument import Geometry, Polarisation
 
 from phonopy_spectroscopy.raman.intensity import (
     calculate_single_crystal_raman_intensities,
@@ -65,9 +65,9 @@ from phonopy_spectroscopy.utility.geometry import (
 _EXAMPLE_BASE_DIR = r"../example/si"
 
 
-# --------------------------------------------
-# Tests for energy-dependent Raman simulations
-# --------------------------------------------
+# ---------------------------
+# Tests for Raman simulations
+# ---------------------------
 
 
 class TestRamanSimulation(unittest.TestCase):

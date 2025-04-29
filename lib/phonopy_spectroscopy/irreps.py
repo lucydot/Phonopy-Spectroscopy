@@ -6,8 +6,7 @@
 # ---------
 
 
-"""Data and routines for handling irreducible representations (irreps).
-"""
+"""Data and routines for handling irreducible representations (irreps)."""
 
 
 # -------
@@ -341,7 +340,7 @@ class Irreps:
         for inds in ir_band_inds:
             for idx in inds:
                 if idx in band_inds:
-                    raise Exception(
+                    raise ValueError(
                         "One or more entries in ir_band_inds has "
                         "duplicate band indices."
                     )
@@ -356,7 +355,7 @@ class Irreps:
                     sym != "None"
                     and sym not in _IRREP_ACTIVITIES[pt_grp]["all"]
                 ):
-                    raise Exception(
+                    raise ValueError(
                         "{0} is not a valid irrep of point group {1}."
                         "".format(sym, pt_grp)
                     )
@@ -453,7 +452,7 @@ class Irreps:
                 )
 
             if len(subset_inds) != len(set(subset_inds)):
-                raise Exception(
+                raise ValueError(
                     "band_inds contains one or more duplicate indices."
                 )
 
@@ -469,7 +468,7 @@ class Irreps:
                 subset_ir_band_inds.append(ir_band_inds)
             else:
                 if test.sum() > 0:
-                    raise Exception(
+                    raise ValueError(
                         "band_inds cannot cover partial irrep group(s)."
                     )
 
