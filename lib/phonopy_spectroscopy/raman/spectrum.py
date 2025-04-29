@@ -362,7 +362,7 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
 
             for sp_idx in range(self._ints.shape[1]):
                 for f, i, lw in zip(
-                    self.frequencies, self._ints[:, sp_idx], self.linewidths
+                    self.raman_shifts, self._ints[:, sp_idx], self.linewidths
                 ):
                     sp[:, sp_idx] += lorentzian(x, i, f, lw)
 
