@@ -131,7 +131,7 @@ class InfraredDielectricFunctionBase(GammaPhononSpectrumBase):
         lws,
         cell_volume,
         irreps=None,
-        eps_static=None,
+        eps_inf=None,
         **kwargs
     ):
         r"""Create a new instance of the
@@ -150,10 +150,10 @@ class InfraredDielectricFunctionBase(GammaPhononSpectrumBase):
             Unit-cell volume in Ang^3.
         irreps : Irreps or None, optional
             `Irreps` object assigning bands to irrep groups.
-        eps_static : float, array_like or None, optional
-            Static dielectric constant to add to the calculated
-            dielectric function in units of relative permittivity (same
-            shape as elements in `osc_strs`).
+        eps_inf : float, array_like or None, optional
+            High-frequency dielectric constant in units of relative
+            permittivity to add to the calculated dielectric function
+            (same shape as elements in `osc_strs`).
         **kwargs
             Keyword arguments to the `GammaPhononSpectrumBase`
             constructor.
@@ -197,29 +197,29 @@ class InfraredDielectricFunctionBase(GammaPhononSpectrumBase):
         if cell_volume <= 0.0:
             raise ValueError("cell_volume must be positive and non-zero.")
 
-        if eps_static is not None:
-            eps_static = np.asarray(eps_static)
+        if eps_inf is not None:
+            eps_inf = np.asarray(eps_inf)
 
             if not (
-                (osc_strs.ndim == 1 and eps_static.ndim > 0)
-                or np_check_shape(eps_static, osc_strs.shape[1:])
+                (osc_strs.ndim == 1 and eps_inf.ndim > 0)
+                or np_check_shape(eps_inf, osc_strs.shape[1:])
             ):
                 raise ValueError(
-                    "If supplied, eps_static must have the same "
+                    "If supplied, eps_inf must have the same "
                     "dimensions as the elements in osc_strs."
                 )
 
-            # The static dielectric constant should be real.
+            # The high-frequency dielectric constant should be real.
 
-            if np.iscomplex(eps_static).any():
-                raise ValueError("If supplied, eps_static must be real.")
+            if np.iscomplex(eps_inf).any():
+                raise ValueError("If supplied, eps_inf must be real.")
 
-            if eps_static.ndim == 0:
+            if eps_inf.ndim == 0:
                 # Scalar -> store as a "regular" Python float.
-                eps_static = float(eps_static)
+                eps_inf = float(eps_inf)
             else:
                 # Tensor -> store as a NumPy array.
-                eps_static = np_asarray_copy(eps_static, dtype=np.float64)
+                eps_inf = np_asarray_copy(eps_inf, dtype=np.float64)
 
         # Call the GammaPhononSpectrumBase constructor to handle
         # "x-axis"-related intialisation.
@@ -233,7 +233,7 @@ class InfraredDielectricFunctionBase(GammaPhononSpectrumBase):
         self._osc_strs = osc_strs
         self._cell_volume = cell_volume
 
-        self._eps_static = eps_static
+        self._eps_inf = eps_inf
 
         self._dielectric_func = None
 
@@ -267,13 +267,12 @@ class InfraredDielectricFunctionBase(GammaPhononSpectrumBase):
                 INFRARED_DIELECTIC_TO_RELATIVE_PERMITTIVITY / self._cell_volume
             )
 
-            # If a static dielectric constant was supplied during
-            # initialisation, add it to the dielectric function.
+            # If a high-frequency dielectric constant was supplied
+            # during initialisation, add it to the dielectric function.
 
-            if self._eps_static is not None:
-                # Note that _eps_static may be a ("regular") float.
-
-                dielectric_func += np.asarray(self._eps_static)[np.newaxis]
+            if self._eps_inf is not None:
+                # Note that _eps_inf may be a ("regular") float.
+                dielectric_func += np.asarray(self._eps_inf)[np.newaxis]
 
             self._dielectric_func = dielectric_func
 
@@ -302,7 +301,7 @@ class TensorInfraredDielectricFunction(InfraredDielectricFunctionBase):
         lws,
         cell_volume,
         irreps=None,
-        eps_static=None,
+        eps_inf=None,
         x_range=None,
         x_res=None,
         x_units="thz",
@@ -326,9 +325,9 @@ class TensorInfraredDielectricFunction(InfraredDielectricFunctionBase):
             Unit-cell volume in Ang^3.
         irreps : Irreps or None, optional
             `Irreps` object assigning bands to irrep groups.
-        eps_static : float or None, optional
-            Static dielectric constant in units of relative permittivity
-            to add to the calculated dielectric function.
+        eps_inf : float or None, optional
+            High-frequency dielectric constant in units of relative
+            permittivity to add to the calculated dielectric function.
         x_range : tuple of float or None, optional
             `(min, max)` range of x-axis of simulated spectrum in
             `x_units` (default: automatically determined).
@@ -357,7 +356,7 @@ class TensorInfraredDielectricFunction(InfraredDielectricFunctionBase):
             lws,
             cell_volume,
             irreps=irreps,
-            eps_static=eps_static,
+            eps_inf=eps_inf,
             x_range=x_range,
             x_res=x_res,
             x_units=x_units,
@@ -370,12 +369,12 @@ class TensorInfraredDielectricFunction(InfraredDielectricFunctionBase):
         return np_readonly_view(self._osc_strs)
 
     @property
-    def epsilon_static(self):
-        """numpy.ndarray or None : Static dielectric constant (shape:
-        `(3, 3)`)."""
+    def epsilon_inf(self):
+        """numpy.ndarray or None : High-frequency dielectric constant
+        (shape: `(3, 3)`)."""
 
-        if self._eps_static is not None:
-            return np_readonly_view(self._eps_static)
+        if self._eps_inf is not None:
+            return np_readonly_view(self._eps_inf)
 
         return None
 
@@ -476,7 +475,7 @@ class ScalarInfraredDielectricFunction(InfraredDielectricFunctionBase):
         lws,
         cell_volume,
         irreps=None,
-        eps_static=None,
+        eps_inf=None,
         x_range=None,
         x_res=None,
         x_units="thz",
@@ -499,9 +498,9 @@ class ScalarInfraredDielectricFunction(InfraredDielectricFunctionBase):
             Unit-cell volume in Ang^3.
         irreps : Irreps or None, optional
             `Irreps` object assigning bands to irrep groups.
-        eps_static : array_like or None, optional
-            Static dielectric constant to add to the calculated
-            dielectric function in units of relative permittivity
+        eps_inf: array_like or None, optional
+            High-frequency dielectric constant in units of relative
+            permittivity to add to the calculated dielectric function
             (shape: `(3, 3)`).
         x_range : tuple of float or None, optional
             `(min, max)` range of x-axis of simulated spectrum in
@@ -526,7 +525,7 @@ class ScalarInfraredDielectricFunction(InfraredDielectricFunctionBase):
             lws,
             cell_volume,
             irreps=irreps,
-            eps_static=eps_static,
+            eps_inf=eps_inf,
             x_range=x_range,
             x_res=x_res,
             x_units=x_units,
@@ -577,11 +576,11 @@ class ScalarInfraredDielectricFunction(InfraredDielectricFunctionBase):
         return np_readonly_view(self._osc_strs)
 
     @property
-    def epsilon_static(self):
-        """float or None : Static dielectric constant."""
+    def epsilon_inf(self):
+        """float or None : High-frequency dielectric constant."""
 
-        if self._eps_static is not None:
-            return self._eps_static
+        if self._eps_inf is not None:
+            return self._eps_inf
 
         return None
 

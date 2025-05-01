@@ -235,44 +235,7 @@ class InfraredCalculator:
         self._lazy_calc_mode_oscillator_strengths()
         return np_readonly_view(self._mode_oscillator_strengths)
 
-    def _try_calc_eps_static(self):
-        r"""Attempt to calculate and return the static dielectric
-        constant, raising RuntimeWarnings if \eps_inf is unavailable
-        and/or \eps_static cannot be calculated, and returning \eps = 0
-        as a fallback."""
-
-        eps_static = np.zeros((3, 3), dtype=np.float64)
-
-        # If Phonopy is not available, GammaPhonons.hessian(), which is
-        # called during the calculation of \eps_ionic, will raise a
-        # RuntimeError. Since the most sensible default behaviour is to
-        # try to compute \eps_ionic, we catch the exception and print a
-        # warning.
-
-        try:
-            self._lazy_calc_epsilon_ionic()
-            eps_static += self._eps_ionic
-        except RuntimeError:
-            warnings.warn(
-                "epsilon_ionic is not available because Phonopy cannot "
-                "be imported, and will not be included in the "
-                "epsilon_static added to the dielectric function.",
-                RuntimeWarning,
-            )
-
-        if self._eps_inf is not None:
-            eps_static += self._eps_inf
-        else:
-            warnings.warn(
-                "epsilon_inf was not provided during initialisation "
-                "and will not be included in the epsilon_static added "
-                "to the dielectric function.",
-                RuntimeWarning,
-            )
-
-        return eps_static
-
-    def _get_calc_params(self, lw, add_eps_static, active_only):
+    def _get_calc_params(self, lw, add_eps_inf, active_only):
         r"""Determine parameters for infrared dielectric function
         calculations.
 
@@ -281,10 +244,9 @@ class InfraredCalculator:
         lw : float or None
             Uniform linewidth or scale factor for calculated linewidths,
             depending on whether calculation has linewidths.
-        add_eps_static : bool, optional
-            If `True`, compute and add the static dielectric constant
-            \eps_static = \eps_inf + \eps_ionic to the dielectric
-            function.
+        add_eps_inf : bool, optional
+            If `True`, add the high-frequency dielectric constant
+            \eps_inf to the dielectric function.
         active_only : bool
             If `True`, and if the underlying Gamma-point phonon
             calculations has irreps, return parameters for the subset of
@@ -295,7 +257,7 @@ class InfraredCalculator:
         params : dict
             Dictionary of calculation parameters with the following: `{
                 "linewidths": numpy.ndarray,
-                "epsilon_static" : numpy.ndarray
+                "epsilon_inf" : numpy.ndarray
                 }`
         """
 
@@ -350,19 +312,19 @@ class InfraredCalculator:
 
         params["irreps"] = irreps
 
-        # Static dielectric constant.
+        # High-frequency dielectric constant.
 
-        eps_static = None
+        eps_inf = None
 
-        if add_eps_static:
-            eps_static = self._try_calc_eps_static()
+        if add_eps_inf:
+            eps_inf = self._eps_inf
 
-        params["epsilon_static"] = eps_static
+        params["epsilon_inf"] = eps_inf
 
         return params
 
     def tensor_dielectric_function(
-        self, lw=None, add_eps_static=True, active_only=True, **kwargs
+        self, lw=None, add_eps_inf=True, active_only=True, **kwargs
     ):
         r"""Simulate the tensor infrared dielectric function.
 
@@ -372,10 +334,10 @@ class InfraredCalculator:
             Uniform linewidth or scale factor for calculated linewidths
             (defaults: 0.5 THz uniform linewidth or scale factor of
             1.0, depending on whether calculation has linewidths).
-        add_eps_static : bool, optional
-            If `True`, compute and add the static dielectric constant
-            \eps_static = \eps_inf + \eps_ionic to the dielectric
-            function if available (default: `True`).
+        add_eps_inf : bool, optional
+            If `True`, add the high-frequency dielectric constant
+            \eps_inf, if available, to the dielectric function (default:
+            `True`).
         active_only : bool, optional
             If `True`, and if the underlying Gamma-point phonon
             calculation has irreps, simulate the dielectric function
@@ -398,7 +360,7 @@ class InfraredCalculator:
 
         # Determine linewidths.
 
-        params = self._get_calc_params(lw, add_eps_static, active_only)
+        params = self._get_calc_params(lw, add_eps_inf, active_only)
 
         # Calculate mode oscillator strengths.
 
@@ -410,7 +372,7 @@ class InfraredCalculator:
             params["linewidths"],
             self._gamma_ph.structure.volume(),
             irreps=params["irreps"],
-            eps_static=params["epsilon_static"],
+            eps_inf=params["epsilon_inf"],
             **kwargs,
         )
 
@@ -422,7 +384,7 @@ class InfraredCalculator:
         s_pol,
         rot=None,
         lw=None,
-        add_eps_static=True,
+        add_eps_inf=True,
         active_only=True,
         **kwargs
     ):
@@ -445,10 +407,10 @@ class InfraredCalculator:
             Uniform linewidth or scale factor for calculated linewidths
             (defaults: 0.5 THz uniform linewidth or scale factor of
             1.0, depending on whether calculation has linewidths).
-        add_eps_static : bool, optional
-            If `True`, compute and add the static dielectric constant
-            \eps_static = \eps_inf + \eps_ionic to the dielectric
-            function if available (default: `True`).
+        add_eps_inf : bool, optional
+            If `True`, add the high-frequency dielectric constant
+            \eps_inf, if available, to the dielectric function (default:
+            `True`).
         active_only : bool, optional
             If `True`, and if the underlying Gamma-point phonon
             calculation has irreps, simulate the dielectric function
@@ -468,7 +430,7 @@ class InfraredCalculator:
             Object returned by this function.
         """
 
-        params = self._get_calc_params(lw, add_eps_static, active_only)
+        params = self._get_calc_params(lw, add_eps_inf, active_only)
 
         r = rotation_matrix_from_vectors(
             self._gamma_ph.structure.real_space_normal(hkl, conv=True),
@@ -487,18 +449,18 @@ class InfraredCalculator:
         self._lazy_calc_mode_oscillator_strengths()
 
         osc_str = calculate_single_crystal_oscillator_strengths(
-            params["oscillator_strengths"], geom, i_pol, s_pol, rot=rot
+            params["oscillator_strengths"], geom, i_pol, s_pol, rot=r
         )
 
-        # If adding \eps_static to the simulated dielectric function, we
+        # If adding \eps_inf to the simulated dielectric function, we
         # need to compute the scalar value in the same way as the scalar
         # oscillator strengths.
 
-        eps_static = params["epsilon_static"]
+        eps_inf = params["epsilon_inf"]
 
-        if eps_static is not None:
-            eps_static = calculate_single_crystal_oscillator_strengths(
-                eps_static, geom, i_pol, s_pol, rot=rot
+        if eps_inf is not None:
+            eps_inf = calculate_single_crystal_oscillator_strengths(
+                eps_inf, geom, i_pol, s_pol, rot=rot
             )
 
         return ScalarInfraredDielectricFunction(
@@ -507,7 +469,7 @@ class InfraredCalculator:
             params["linewidths"],
             self._gamma_ph.structure.volume(),
             irreps=params["irreps"],
-            eps_static=eps_static,
+            eps_inf=eps_inf,
             **kwargs,
         )
 
@@ -519,7 +481,7 @@ class InfraredCalculator:
         po_hkl=None,
         po_eta=0.0,
         lw=None,
-        add_eps_static=True,
+        add_eps_inf=True,
         active_only=True,
         method="best",
         lc_prec=5,
@@ -544,10 +506,10 @@ class InfraredCalculator:
             Uniform linewidth or scale factor for calculated linewidths
             (defaults: 0.5 THz uniform linewidth or scale factor of
             1.0, depending on whether calculation has linewidths).
-        add_eps_static : bool, optional
-            If `True`, compute and add the static dielectric constant
-            \eps_static = \eps_inf + \eps_ionic to the dielectric
-            function if available (default: `True`).
+        add_eps_inf : bool, optional
+            If `True`, add the high-frequency dielectric constant
+            \eps_inf, if available, to the dielectric function (default:
+            `True`).
         active_only : bool, optional
             If `True`, and if the underlying Gamma-point phonon
             calculation has irreps, simulate the dielectric function
@@ -572,7 +534,7 @@ class InfraredCalculator:
             Object returned by this function.
         """
 
-        params = self._get_calc_params(lw, add_eps_static, active_only)
+        params = self._get_calc_params(lw, add_eps_inf, active_only)
 
         po_surf_norm = None
 
@@ -594,11 +556,11 @@ class InfraredCalculator:
             lc_prec=lc_prec,
         )
 
-        eps_static = params["epsilon_static"]
+        eps_inf = params["epsilon_inf"]
 
-        if eps_static is not None:
-            eps_static = calculate_powder_oscillator_strengths(
-                eps_static,
+        if eps_inf is not None:
+            eps_inf = calculate_powder_oscillator_strengths(
+                eps_inf,
                 geom,
                 i_pol,
                 s_pol,
@@ -614,7 +576,7 @@ class InfraredCalculator:
             params["linewidths"],
             self._gamma_ph.structure.volume(),
             irreps=params["irreps"],
-            eps_static=eps_static,
+            eps_inf=eps_inf,
             **kwargs,
         )
 

@@ -61,7 +61,8 @@ class TestInfraredCalculations(unittest.TestCase):
         # charges from a Phonopy BORN file.
 
         eps_inf, born_charges = hf_dielectric_and_born_from_born(
-            os.path.join(_EXAMPLE_BASE_DIR, r"BORN"), gamma_ph.structure
+            os.path.join(_EXAMPLE_BASE_DIR, r"BORN"),
+            gamma_ph.structure,
         )
 
         # Construct an InfraredCalculator object.

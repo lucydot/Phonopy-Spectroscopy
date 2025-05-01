@@ -72,7 +72,8 @@ class TestInfratedSimulations(unittest.TestCase):
         )
 
         eps_inf, born_charges = hf_dielectric_and_born_from_born(
-            os.path.join(_EXAMPLE_BASE_DIR, r"BORN"), gamma_ph.structure
+            os.path.join(_EXAMPLE_BASE_DIR, r"BORN"),
+            gamma_ph.structure,
         )
 
         self._calc = InfraredCalculator(
@@ -178,7 +179,7 @@ class TestInfratedSimulations(unittest.TestCase):
         # Load reference data.
 
         vasprun_xml = os.path.join(
-            _EXAMPLE_BASE_DIR, r"ir_ref/vasprun-Epsilon.xml"
+            _EXAMPLE_BASE_DIR, r"ir_ref/vasprun-PBEsol+D3-Epsilon.xml"
         )
 
         tree = ET.parse(vasprun_xml)
@@ -223,7 +224,7 @@ class TestInfratedSimulations(unittest.TestCase):
         # Load reference data.
 
         vasprun_xml = os.path.join(
-            _EXAMPLE_BASE_DIR, r"ir_ref/vasprun-Epsilon.xml"
+            _EXAMPLE_BASE_DIR, r"ir_ref/vasprun-PBEsol+D3-Epsilon.xml"
         )
 
         tree = ET.parse(vasprun_xml)
@@ -256,7 +257,7 @@ class TestInfratedSimulations(unittest.TestCase):
 
         dielectric_func = calc_new.tensor_dielectric_function(
             lw=2.0 * np.mean(e_ref[1:] - e_ref[:-1]),
-            add_eps_static=False,
+            add_eps_inf=False,
             x=e_ref,
         )
 
