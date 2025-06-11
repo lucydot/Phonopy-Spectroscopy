@@ -6,17 +6,18 @@
 # ---------
 
 
-"""Utility routines for implementing the command-line interface."""
+"""Miscellaneous routines for implementing the command-line interface."""
 
 
 # -------
 # Imports
 # -------
 
+
 import numpy as np
 
-from ..utility.geometry import rotation_matrix_from_vectors
-from ..utility.numpy_helper import np_check_shape
+from ...utility.geometry import rotation_matrix_from_vectors
+from ...utility.numpy_helper import np_check_shape
 
 
 # ---------

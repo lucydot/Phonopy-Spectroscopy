@@ -182,6 +182,23 @@ class FiniteDisplacementRamanTensorCalculator:
         difference scheme."""
         return len(self._disp_steps)
 
+    def get_maximum_displacements(self):
+        """ """
+
+        edisps = self._gamma_ph.eigendisplacements()
+        abs_disp_steps = np.abs(self._disp_steps)
+
+        max_disps = np.zeros(
+            (self.num_bands, self.num_steps), dtype=np.float64
+        )
+
+        for i, idx in enumerate(self._band_inds):
+            max_disps[i] = (
+                abs_disp_steps * np.linalg.norm(edisps[idx], axis=0).max()
+            )
+
+        return max_disps
+
     def generate_displaced_structures(self):
         """Generate and return displaced structures for the selected
         band indices and displacement steps.

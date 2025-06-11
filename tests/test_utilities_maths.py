@@ -6,8 +6,7 @@
 # ---------
 
 
-"""Tests for the the maths routines in phonopy_spectroscopy.utilities.
-"""
+"""Tests for the the maths routines in phonopy_spectroscopy.utilities."""
 
 
 # -------

@@ -19,7 +19,9 @@ import unittest
 
 import numpy as np
 
-from phonopy_spectroscopy.cli.io_helper import raman_fd_read_dielectrics_vasp
+from phonopy_spectroscopy.cli.utility.raman_io import (
+    fd_read_dielectrics_vasp,
+)
 
 from phonopy_spectroscopy.interfaces.phonopy_interface import (
     gamma_phonons_from_phono3py,
@@ -141,7 +143,7 @@ class TestFiniteDisplacementRamanCalculations(unittest.TestCase):
             self._calc.band_indices, self._calc.num_steps, file_path_template
         )
 
-        e, eps_e = raman_fd_read_dielectrics_vasp(
+        e, eps_e = fd_read_dielectrics_vasp(
             file_list, self._calc.num_bands, self._calc.num_steps
         )
 
@@ -185,7 +187,7 @@ class TestFiniteDisplacementRamanCalculations(unittest.TestCase):
             self._calc.band_indices, self._calc.num_steps, file_path_template
         )
 
-        e, eps_e = raman_fd_read_dielectrics_vasp(
+        e, eps_e = fd_read_dielectrics_vasp(
             file_list, self._calc.num_bands, self._calc.num_steps
         )
 

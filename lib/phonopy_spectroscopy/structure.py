@@ -108,7 +108,7 @@ def fractional_to_cartesian_coordinates(frac_pos, latt_vecs):
     cart_pos = np.zeros_like(frac_pos)
 
     for i, p in enumerate(frac_pos):
-        cart_pos[i] = np.dot(latt_vecs, p)
+        cart_pos[i] = np.dot(p.T, latt_vecs)
 
     return cart_pos if n_dim_add == 0 else cart_pos[0]
 

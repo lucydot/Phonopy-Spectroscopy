@@ -50,7 +50,6 @@ from phonopy_spectroscopy.raman.intensity import (
 )
 
 from phonopy_spectroscopy.utility.geometry import (
-    parse_direction,
     rotation_matrix_from_vectors,
     rotation_matrix_from_axis_angle,
 )

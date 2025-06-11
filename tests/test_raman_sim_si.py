@@ -32,7 +32,9 @@ import numpy as np
 
 from io_helper import generate_fd_raman_dielectric_input_file_list
 
-from phonopy_spectroscopy.cli.io_helper import raman_fd_read_dielectrics_vasp
+from phonopy_spectroscopy.cli.utility.raman_io import (
+    fd_read_dielectrics_vasp,
+)
 
 from phonopy_spectroscopy.instrument import Geometry, Polarisation
 
@@ -107,7 +109,7 @@ class TestRamanSimulation(unittest.TestCase):
             fd_calc.band_indices, fd_calc.num_steps, file_path_template
         )
 
-        e, eps_e = raman_fd_read_dielectrics_vasp(
+        e, eps_e = fd_read_dielectrics_vasp(
             file_list, fd_calc.num_bands, fd_calc.num_steps
         )
 
