@@ -183,7 +183,16 @@ class FiniteDisplacementRamanTensorCalculator:
         return len(self._disp_steps)
 
     def get_maximum_displacements(self):
-        """ """
+        """Calculate and return an `(N, M)` array of the maximum atomic
+        displacemnts for each of the selected bands and displacement
+        steps.
+
+        Returns
+        -------
+        max_disps : numpy.ndarray
+            Maximum atomic displacements for each band and displacement
+            step (shape: `(N, M)`).
+        """
 
         edisps = self._gamma_ph.eigendisplacements()
         abs_disp_steps = np.abs(self._disp_steps)
@@ -201,7 +210,7 @@ class FiniteDisplacementRamanTensorCalculator:
 
     def generate_displaced_structures(self):
         """Generate and return displaced structures for the selected
-        band indices and displacement steps.
+        bands and displacement steps.
 
         Returns
         -------

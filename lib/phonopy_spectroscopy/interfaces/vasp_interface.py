@@ -15,8 +15,6 @@
 # -------
 
 
-import warnings
-
 import xml.etree.ElementTree as ET
 
 import numpy as np
@@ -355,9 +353,9 @@ def dielectric_from_vasprun_xml(
 
     Returns
     -------
-    dielectrics : tuple of numpt.ndarray
+    dielectrics : tuple of numpy.ndarray
         Extracted dielectric constant/function as a tuple of
-        `(e, eps)` with shape `(N,)` and `(N, 3, 3)`. For a
+        `(e, eps)` with shapes `(N,)` and `(N, 3, 3)`. For a
         high-frequency dielectric constant calculation, the energy is
         assumed to be E = 0.
     """

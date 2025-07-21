@@ -18,7 +18,10 @@ function simulations."""
 import numpy as np
 import pandas as pd
 
-from ..constants import INFRARED_DIELECTIC_TO_RELATIVE_PERMITTIVITY
+from ..constants import (
+    INFRARED_DIELECTIC_TO_RELATIVE_PERMITTIVITY,
+    SPEED_OF_LIGHT,
+)
 
 from ..distributions import dielectric_function
 
@@ -31,87 +34,6 @@ from ..utility.numpy_helper import (
     np_asarray_copy,
     np_check_shape,
 )
-
-
-# -------------
-# Unit handling
-# -------------
-
-
-_ABS_COEFF_UNIT_LABELS = {
-    "thz": {
-        "text_label": r"\alpha / THz^-1",
-        "plot_label": r"$\alpha$ / THz$^{-1}$",
-    },
-    "inv_cm": {"text_label": r"\alpha / cm", "plot_label": r"$\alpha$ / cm"},
-    "ev": {
-        "text_label": r"\alpha / eV^-1",
-        "plot_label": r"$\alpha$ / eV$^{-1}$",
-    },
-    "mev": {
-        "text_label": r"\alpha / meV^-1",
-        "plot_label": r"$\alpha$ / meV$^{-1}$",
-    },
-}
-
-
-def get_absorption_coefficient_text_label(freq_unit):
-    """Return a label for absorption coefficients calculated with
-    frequencies in unit `freq_unit` suitable for text output.
-
-    Parameters
-    ----------
-    freq_unit : str
-        Frequency unit.
-
-    Returns
-    -------
-    label : str
-        Text label for absorption coefficients calculated with
-        frequencies in `freq_unit`.
-    """
-
-    if freq_unit is not None:
-        k = freq_unit.lower()
-
-        if k in _ABS_COEFF_UNIT_LABELS:
-            return _ABS_COEFF_UNIT_LABELS[k]["text_label"]
-
-    raise RuntimeError(
-        "Labels are not available for absorption coefficients "
-        'calculated with frequencies in freq_unit="{0}" - this is '
-        "likely to be a bug.".format(freq_unit)
-    )
-
-
-def get_absorption_coefficient_plot_label(freq_unit):
-    """Return a label for absorption coefficients calculated with
-    frequencies in unit `freq_unit` suitable for plotting, which may
-    contain TeX strings.
-
-    Parameters
-    ----------
-    freq_unit : str
-        Frequency unit.
-
-    Returns
-    -------
-    label : str
-        Plot label for absorption coefficients calculated with
-        frequencies in `freq_unit`.
-    """
-
-    if freq_unit is not None:
-        k = freq_unit.lower()
-
-        if k in _ABS_COEFF_UNIT_LABELS:
-            return _ABS_COEFF_UNIT_LABELS[k]["plot_label"]
-
-    raise RuntimeError(
-        "Labels are not available for absorption coefficients "
-        'calculated with frequencies in freq_unit="{0}" - this is '
-        "likely to be a bug.".format(freq_unit)
-    )
 
 
 # ------------------------------------
@@ -534,6 +456,8 @@ class ScalarInfraredDielectricFunction(InfraredDielectricFunctionBase):
 
         self._dielectric_func = None
 
+        self._n_tilde = None
+
         self._abs_coeff = None
         self._ref_coeff = None
         self._loss_func = None
@@ -551,14 +475,22 @@ class ScalarInfraredDielectricFunction(InfraredDielectricFunctionBase):
             or self._ref_coeff is None
             or self._loss_func is None
         ):
-            # Complex refractive index: \tilde{n} = n + ik
+            # Complex refractive index:
+            #     \tilde{n} = sqrt(\epsilon) = n + ik
 
             n_tilde = np.sqrt(self._dielectric_func)
 
-            # Absorption coefficient: \alpha = 2 \omega Im[\epsilon] / n
+            self._n_tilde = n_tilde
 
-            self._abs_coeff = (
-                2.0 * self.x * (self._dielectric_func.imag / n_tilde.real)
+            # Absorption coefficient: \alpha = (2 \omega / c) * k
+
+            # Using frequencies in THz (converted to Hz) and c in m/s
+            # (converted to cm/s) should give \alpha in cm^-1.
+
+            v = convert_frequency_units(self.x, self._x_units, "thz")
+
+            self._abs_coeff = (2.0 * 1.0e12 * v * n_tilde.imag) / (
+                1.0e2 * SPEED_OF_LIGHT
             )
 
             # Reflection coefficient (normal incidence):
@@ -590,6 +522,27 @@ class ScalarInfraredDielectricFunction(InfraredDielectricFunctionBase):
 
         self._lazy_init_dielectric_func()
         return np_readonly_view(self._dielectric_func)
+
+    @property
+    def complex_refractive_index(self):
+        """numpy.ndarray : Complex refractive index (shape: `(O,)`)."""
+
+        self._lazy_init_derived()
+        return np_readonly_view(self._n_tilde)
+
+    @property
+    def refractive_index(self):
+        """numpy.ndarray : Refractive index (shape: `(O,)`)."""
+
+        self._lazy_init_derived()
+        return np_readonly_view(self._n_tilde.real)
+
+    @property
+    def extinction_coefficient(self):
+        """numpy.ndarray : Extinction coefficient (shape: `(O,)`)."""
+
+        self._lazy_init_derived()
+        return np_readonly_view(self._n_tilde.imag)
 
     @property
     def absorption_coefficient(self):
@@ -632,14 +585,14 @@ class ScalarInfraredDielectricFunction(InfraredDielectricFunctionBase):
         """str : Absorption coefficient unit label suitable for
         plain-text output."""
 
-        return get_absorption_coefficient_text_label(self._x_units)
+        return r"\alpha / cm^-1"
 
     @property
     def absorption_coefficient_unit_plot_label(self):
         """str : Absorption coefficient unit label suitable for plotting
         (contains TeX strings)."""
 
-        return get_absorption_coefficient_plot_label(self._x_units)
+        return r"$\alpha$ / cm$^{-1}$"
 
     def peak_table(self):
         """Return the peak table as a Pandas `DataFrame`.
