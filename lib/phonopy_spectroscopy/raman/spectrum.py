@@ -178,7 +178,7 @@ def modulate_intensities(freqs, ints, w=None, t=None):
         f_i = nm_to_thz(w)
 
         scale = _RAMAN_INTENSITY_PREFACTOR * (
-            ((1.0e12 * (f_i - freqs)) ** 4) / (1.0e12 * freqs)
+            ((1.0e12 * (f_i - freqs)) ** 4) / (1.0e12 * np.abs(freqs))
         )
 
         ints *= scale[:, np.newaxis]
