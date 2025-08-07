@@ -211,7 +211,8 @@ class Structure:
                 warnings.warn(
                     "Atomic mass lookup returned m <= 0 for one or "
                     "more atoms. The atomic masses likely need to be "
-                    "specified explicitly with the at_m keyword."
+                    "specified explicitly with the at_m keyword.",
+                    RuntimeWarning,
                 )
         else:
             at_m = np_asarray_copy(at_m, dtype=np.float64)
