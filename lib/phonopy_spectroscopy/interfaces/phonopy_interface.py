@@ -55,6 +55,7 @@ def gamma_phonons_from_phono3py(
     lws_file=None,
     lws_t=300.0,
     irreps_file=None,
+    at_m=None,
     conv_trans=None,
 ):
     """Read a complete Phono(3)py calculation and return a
@@ -74,6 +75,9 @@ def gamma_phonons_from_phono3py(
         Temperature to read linewidths at (default: 300 K)
     irreps_file : str, optional
         irreps.yaml file to read irreps from (default: `None`).
+    at_m : array_like, optional
+        Atomic masses (optional, default: `None`; overridden if
+        `cell_file` is a phonopy.yaml file).
     conv_trans : array_like, optional
         Transformation matrix to convert the structure to its
         conventional cell (shape: `(3, 3)`, default: `None`).
@@ -93,20 +97,10 @@ def gamma_phonons_from_phono3py(
     _, ext = os.path.splitext(cell_file)
 
     if ext.lower() == ".yaml":
-        struct = structure_from_phonopy_yaml(cell_file)
+        struct = structure_from_phonopy_yaml(cell_file, conv_trans=conv_trans)
     else:
-        struct = structure_from_poscar(cell_file)
-
-    # If a transformation matrix is specified, create a new structure
-    # with the conv_trans keyword set.
-
-    if conv_trans is not None:
-        struct = Structure(
-            struct.lattice_vectors,
-            struct.atom_positions,
-            struct.atom_types,
-            struct.atomic_masses,
-            conv_trans=conv_trans,
+        struct = structure_from_poscar(
+            cell_file, at_m=at_m, conv_trans=conv_trans
         )
 
     # Read a set of frequencies/eigenvectors. If freqs_evecs_file has a
@@ -161,7 +155,7 @@ def gamma_phonons_from_phono3py(
 # ----------
 
 
-def structure_from_phonopy_yaml(file_path):
+def structure_from_phonopy_yaml(file_path, conv_trans=None):
     """Read a structure from a phonopy.yaml file and return a
     `Structure` object.
 
@@ -169,6 +163,9 @@ def structure_from_phonopy_yaml(file_path):
     ----------
     file_path : str
         Input file.
+    conv_trans : array_like, optional
+        Transformation matrix to convert the structure to its
+        conventional cell (shape: `(3, 3)`, default: `None`).
 
     Returns
     -------
@@ -184,7 +181,8 @@ def structure_from_phonopy_yaml(file_path):
         cell["lattice"],
         [atom["coordinates"] for atom in cell["points"]],
         [atom["symbol"] for atom in cell["points"]],
-        [atom["mass"] for atom in cell["points"]],
+        at_m=[atom["mass"] for atom in cell["points"]],
+        conv_trans=conv_trans,
     )
 
 
