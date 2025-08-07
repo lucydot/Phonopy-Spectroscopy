@@ -206,6 +206,13 @@ class Structure:
             at_m = np.array(
                 [lookup_atomic_mass(sym) for sym in at_typ], dtype=np.float64
             )
+
+            if (at_m <= 0.0).any():
+                warnings.warn(
+                    "Atomic mass lookup returned m <= 0 for one or "
+                    "more atoms. The atomic masses likely need to be "
+                    "specified explicitly with the at_m keyword."
+                )
         else:
             at_m = np_asarray_copy(at_m, dtype=np.float64)
 
@@ -213,6 +220,9 @@ class Structure:
                 raise ValueError(
                     "If supplied, at_m must be an array_like with shape (N,)."
                 )
+
+        if (at_m <= 0.0).any():
+            raise ValueError("Atomic masses must be larger than zero.")
 
         if conv_trans is not None:
             conv_trans = np_asarray_copy(conv_trans, dtype=np.float64)
