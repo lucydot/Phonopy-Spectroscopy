@@ -134,11 +134,18 @@ def adjust_gamma_phonons_for_spectrum_type(
         else:
             ints_both = np.concatenate((ints_as, ints), axis=0)
 
+            irrep_syms_both = None
+
+            if irrep_syms is not None:
+                irrep_syms_both = np.concatenate(
+                    (irrep_syms_as, irrep_syms), axis=0
+                )
+
             return (
                 np.concatenate((freqs_as, freqs), axis=0),
                 ints_both if n_dim_add == 0 else ints_both.reshape((-1,)),
                 np.concatenate((lws_as, lws), axis=0),
-                np.concatenate((irrep_syms_as, irrep_syms), axis=0),
+                irrep_syms_both,
             )
 
     raise ValueError('Unsupported spectrum_type="{0}".'.format(spectrum_type))
@@ -465,12 +472,11 @@ class RamanSpectrumBase(GammaPhononSpectrumBase):
             `DataFrame` containing the peak table.
         """
 
-        d = {"freq_energy": self._freqs, "linewidth": self._lws}
-
-        if self._irrep_syms is not None:
-            d["irrep"] = self._irrep_syms
-        else:
-            d["irrep"] = ["None"] * len(self._freqs)
+        d = {
+            "freq_energy": self._freqs,
+            "linewidth": self._lws,
+            "irrep": self._irrep_syms,
+        }
 
         for i, h in enumerate(self._get_data_frame_column_headers()):
             d[h] = self._ints[:, i]

@@ -281,7 +281,7 @@ class GammaPhononSpectrumBase(SpectrumBase):
                     "with shape (N,)."
                 )
         else:
-            irrep_syms = np.array(["None" * len(freqs)], dtype=object)
+            irrep_syms = np.array(["None"] * len(freqs), dtype=object)
 
         # convert_frequency_units() will raise an error if units are
         # not supported.

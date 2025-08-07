@@ -43,15 +43,7 @@ class FiniteDisplacementRamanTensorCalculator:
     """Set up and post-process Raman tensor calculations using the
     finite-displacement method."""
 
-    def __init__(
-        self,
-        gamma_ph,
-        band_inds="active",
-        prec=2,
-        step_size=1.0e-2,
-        disp_steps=None,
-        step_coeffs=None,
-    ):
+    def __init__(self, gamma_ph, step_size=1.0e-2, prec=2, band_inds="active"):
         r"""Create a new instance of the
         `FiniteDisplacementRamanTensorCalculator` class.
 
@@ -61,17 +53,25 @@ class FiniteDisplacementRamanTensorCalculator:
             Gamma-point phonon calculation.
         step_size : float
             Step size for displacements in sqrt(amu) Ang.
+        prec : int, optional
+            Precision of the central-difference scheme (defualt: 2).
         band_inds : {"all", "active"} or array_like, optional
             Band indices to perform calculations for: `"active"` to
             exclude the acoustic modes and Raman-inactive optic modes
             (requires irreps), `"all"` to include all bands, or a list
-            of band indices (shape `(N,)`, default: `"active"`)
-        prec : int, optional
-            Precision of the central-difference scheme (defualt: 2)
-        disp_steps, step_coeffs : array_like or None, optional
-            Specify the displacement steps and coefficients (shapes:
-            `(M,)`, overrides `prec` if specified).
+            of band indices (shape `(N,)`, default: `"active"`).
         """
+
+        # Set up finite-difference steps.
+
+        step_size = float(step_size)
+
+        if step_size <= 0.0:
+            raise ValueError("step_size must be > 0.")
+
+        cd_steps, step_coeffs = central_difference_coefficients(1, prec)
+
+        disp_steps = cd_steps * step_size
 
         # Identify band indices to use for calculation.
 
@@ -126,28 +126,10 @@ class FiniteDisplacementRamanTensorCalculator:
                         "phonon calculation."
                     )
 
-        if disp_steps is not None or step_coeffs is not None:
-            disp_steps = np_asarray_copy(disp_steps, dtype=np.float64)
-            step_coeffs = np_asarray_copy(step_coeffs, dtype=np.float64)
-
-            if (
-                not np_check_shape(disp_steps, (None,))
-                or not np_check_shape(step_coeffs, (None,))
-                or len(disp_steps) != len(step_coeffs)
-            ):
-                raise ValueError(
-                    "steps and coefficients must both be specified and "
-                    "must be the same length."
-                )
-
-        else:
-            cd_steps, cd_coeffs = central_difference_coefficients(1, prec)
-
-            disp_steps = cd_steps * step_size
-            step_coeffs = cd_coeffs
-
         self._gamma_ph = gamma_ph
         self._band_inds = band_inds
+
+        self._step_size = step_size
         self._disp_steps = disp_steps
         self._step_coeffs = step_coeffs
 
@@ -160,6 +142,11 @@ class FiniteDisplacementRamanTensorCalculator:
     def band_indices(self):
         """numpy.ndarray : Band indices in calculation."""
         return np_readonly_view(self._band_inds)
+
+    @property
+    def step_size(self):
+        """float : Displacement step size."""
+        return self._step_size
 
     @property
     def displacement_steps(self):
@@ -301,11 +288,15 @@ class FiniteDisplacementRamanTensorCalculator:
         #   \alpha' = (1 / 4 \pi) * (\alpha / \eps_0).
 
         r_t = (
-            dielectrics
-            * self._step_coeffs[
-                np.newaxis, :, np.newaxis, np.newaxis, np.newaxis
-            ]
-        ).sum(axis=1) * (self._gamma_ph._struct.volume() / (4.0 * np.pi))
+            (
+                dielectrics
+                * self._step_coeffs[
+                    np.newaxis, :, np.newaxis, np.newaxis, np.newaxis
+                ]
+            ).sum(axis=1)
+            * (1.0 / self._step_size)
+            * (self._gamma_ph._struct.volume() / (4.0 * np.pi))
+        )
 
         # If required, impose an energy cutoff on energy-dependent
         # dielectric functions.
