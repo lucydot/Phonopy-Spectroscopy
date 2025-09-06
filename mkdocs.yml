@@ -1,0 +1,4 @@
+site_name: Phonopy Spectroscopy
+site_url: https://lucydot.github.io/phonopy_spectroscopy
+theme:
+  name: material
