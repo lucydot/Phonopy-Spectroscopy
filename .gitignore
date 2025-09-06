@@ -1,7 +1,12 @@
 # Python cache files.
 
-lib/spectroscopy/*.pyc
-lib/spectroscopy/__pycache__/
+*.pyc
+*__pycache__/*
 
-lib/spectroscopy/*/*.pyc
-lib/spectroscoPy/*/__pycache__/
+# MacOS .DS_Store files.
+
+*.DS_Store
+
+# "scratch" folder.
+
+scratch/
