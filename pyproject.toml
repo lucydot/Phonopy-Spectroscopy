@@ -39,11 +39,12 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 
-[tool.setuptools]
-packages = ["phonopy_spectroscopy"]
+[tool.setuptools.packages.find]
+where = ["src"]  
+include = ["phonopy_spectroscopy"] 
 
 [tool.setuptools_scm]
-write_to = "phonopy_spectroscopy/_version.py"
+write_to = "src/phonopy_spectroscopy/_version.py"
 
 [project.optional-dependencies]
 doc = [
