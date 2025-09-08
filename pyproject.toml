@@ -20,14 +20,14 @@ urls = {source = "https://github.com/skelton-group/Phonopy-Spectroscopy", docume
 dependencies = [
     "numpy",
     "scipy",
-    "pandas"
+    "pandas",
     "pyyaml",
     "H5py",
     "phonopy"
 ]
 keywords = [
     "phonons",
-    "spectroscopy",
+    "spectroscopy"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
