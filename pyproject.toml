@@ -1,0 +1,53 @@
+[build-system]
+requires = [
+    "setuptools >= 65",
+    "setuptools_scm[toml]",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Phonopy-Spectroscopy"
+dynamic = ["version"]
+description = "Simulating vibrational spectra with the Phonopy code"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE.md"}
+authors = [
+    {name = "Jonathan Skelton", email = "jonathan.skelton@manchester.ac.uk"},
+]
+urls = {source = "https://github.com/skelton-group/Phonopy-Spectroscopy", documentation = "skelton-group.github.io/Phonopy-Spectroscopy"}
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas"
+    "pyyaml",
+    "H5py",
+    "phonopy"
+]
+keywords = [
+    "phonons",
+    "spectroscopy",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Topic :: Scientific/Engineering",
+]
+
+[tool.setuptools]
+packages = ["phonopy_spectroscopy"]
+
+[tool.setuptools_scm]
+write_to = "phonopy_spectroscopy/_version.py"
+
+[project.optional-dependencies]
+doc = [
+    "mkdocs-material",
+    "mkdocs-jupyter",
+    "mkdocstrings-python"
+]
