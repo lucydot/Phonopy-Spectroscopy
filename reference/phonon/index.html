@@ -1,0 +1,2724 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://lucydot.github.io/phonopy_spectroscopy/reference/phonon/">
+      
+      
+        <link rel="prev" href="../../tutorials/test_tutorial/">
+      
+      
+        <link rel="next" href="../structure/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.19">
+    
+    
+      
+        <title>phonon - Phonopy Spectroscopy</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phonopy_spectroscopy.phonon" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Phonopy Spectroscopy" class="md-header__button md-logo" aria-label="Phonopy Spectroscopy" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Phonopy Spectroscopy
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              phonon
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Phonopy Spectroscopy" class="md-nav__button md-logo" aria-label="Phonopy Spectroscopy" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Phonopy Spectroscopy
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/benzene_derivatives_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    benzene
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/SiO2_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SiO2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/test_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    test notebook
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Modules
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Modules
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    phonon
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    phonon
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon" class="md-nav__link">
+    <span class="md-ellipsis">
+      phonon
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons" class="md-nav__link">
+    <span class="md-ellipsis">
+      GammaPhonons
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GammaPhonons">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.eigenvectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      eigenvectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.frequencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      frequencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.has_irreps" class="md-nav__link">
+    <span class="md-ellipsis">
+      has_irreps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.has_linewidths" class="md-nav__link">
+    <span class="md-ellipsis">
+      has_linewidths
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.irreps" class="md-nav__link">
+    <span class="md-ellipsis">
+      irreps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.linewidths" class="md-nav__link">
+    <span class="md-ellipsis">
+      linewidths
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.num_modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      num_modes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="__init__">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.__init__--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.eigendisplacements" class="md-nav__link">
+    <span class="md-ellipsis">
+      eigendisplacements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="eigendisplacements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.eigendisplacements--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.from_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      from_dict
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="from_dict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.from_dict--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.from_dict--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.get_acoustic_mode_indices" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_acoustic_mode_indices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_acoustic_mode_indices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.get_acoustic_mode_indices--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.hessian" class="md-nav__link">
+    <span class="md-ellipsis">
+      hessian
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="hessian">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.hessian--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.hessian--notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.to_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_dict
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="to_dict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.to_dict--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Background
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Development
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../credit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Credit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon" class="md-nav__link">
+    <span class="md-ellipsis">
+      phonon
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons" class="md-nav__link">
+    <span class="md-ellipsis">
+      GammaPhonons
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GammaPhonons">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.eigenvectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      eigenvectors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.frequencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      frequencies
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.has_irreps" class="md-nav__link">
+    <span class="md-ellipsis">
+      has_irreps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.has_linewidths" class="md-nav__link">
+    <span class="md-ellipsis">
+      has_linewidths
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.irreps" class="md-nav__link">
+    <span class="md-ellipsis">
+      irreps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.linewidths" class="md-nav__link">
+    <span class="md-ellipsis">
+      linewidths
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.num_modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      num_modes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      structure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="__init__">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.__init__--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.eigendisplacements" class="md-nav__link">
+    <span class="md-ellipsis">
+      eigendisplacements
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="eigendisplacements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.eigendisplacements--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.from_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      from_dict
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="from_dict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.from_dict--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.from_dict--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.get_acoustic_mode_indices" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_acoustic_mode_indices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="get_acoustic_mode_indices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.get_acoustic_mode_indices--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.hessian" class="md-nav__link">
+    <span class="md-ellipsis">
+      hessian
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="hessian">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.hessian--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.hessian--notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.to_dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_dict
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="to_dict">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phonopy_spectroscopy.phonon.GammaPhonons.to_dict--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Returns
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>phonon</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="phonopy_spectroscopy.phonon"></a>
+    <div class="doc doc-contents first">
+
+        <p>Class for storing and working with phonon calculations.</p>
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="phonopy_spectroscopy.phonon.GammaPhonons" class="doc doc-heading">
+            <code>GammaPhonons</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+        <p>Class for storing and working with a Gamma-point phonon
+calculation.</p>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>lib/phonopy_spectroscopy/phonon.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GammaPhonons</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for storing and working with a Gamma-point phonon</span>
+<span class="sd">    calculation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">evecs</span><span class="p">,</span> <span class="n">lws</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">irreps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a new instance of the `GammaPhonons` class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        struct : Structure</span>
+<span class="sd">            Crystal structure.</span>
+<span class="sd">        freqs : array_like</span>
+<span class="sd">            Phonon frequencies in THz (shape: `(3N,)`).</span>
+<span class="sd">        evecs : array_like</span>
+<span class="sd">            Phonon eigenvectors in mass-weighted units of sqrt(amu)</span>
+<span class="sd">            (shape: `(3N, N, 3)`).</span>
+<span class="sd">        lws : array_like or None, optional</span>
+<span class="sd">            Phonon linewidths in THz (shape: `(3N,)`) or `None`.</span>
+<span class="sd">        irreps : Irreps or None, optional</span>
+<span class="sd">            `Irreps` object specifying the point group and assigning</span>
+<span class="sd">            bands to irrep groups.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n_a</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">num_atoms</span>
+
+        <span class="k">if</span> <span class="n">n_a</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;struct cannot be &quot;empty&quot; and must contain at least one atom.&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np_asarray_copy</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np_check_shape</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;freqs must be an array_like with shape (3N,).&quot;</span><span class="p">)</span>
+
+        <span class="n">evecs</span> <span class="o">=</span> <span class="n">np_asarray_copy</span><span class="p">(</span><span class="n">evecs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np_check_shape</span><span class="p">(</span><span class="n">evecs</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,</span> <span class="n">n_a</span><span class="p">,</span> <span class="mi">3</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;evecs must be an array_like with shape (3N, N, 3).&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Eigenvectors are in general complex, but Gamma-point</span>
+        <span class="c1"># eigenvectors must be real.</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplex</span><span class="p">(</span><span class="n">evecs</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">evecs</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ZERO_TOLERANCE</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Gamma-point eigenvectors should be real.&quot;</span><span class="p">)</span>
+
+            <span class="n">evecs</span> <span class="o">=</span> <span class="n">evecs</span><span class="o">.</span><span class="n">real</span>
+
+        <span class="k">if</span> <span class="n">lws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lws</span> <span class="o">=</span> <span class="n">np_asarray_copy</span><span class="p">(</span><span class="n">lws</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np_check_shape</span><span class="p">(</span><span class="n">lws</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;If supplied, lws must be an array_like with shape (3N,).&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">lws</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Linewidths cannot be negative.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">irreps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ir_band_inds_flat</span> <span class="o">=</span> <span class="n">irreps</span><span class="o">.</span><span class="n">band_indices_flat</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ir_band_inds_flat</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;If supplied, irreps must assign all bands to &quot;</span>
+                    <span class="s2">&quot;irrep groups.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ir_band_inds_flat</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;One or more band indices in irreps are not &quot;</span>
+                    <span class="s2">&quot;compatible with the number of modes in the &quot;</span>
+                    <span class="s2">&quot;phonon calculation.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_struct</span> <span class="o">=</span> <span class="n">struct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span> <span class="o">=</span> <span class="n">freqs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span> <span class="o">=</span> <span class="n">evecs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lws</span> <span class="o">=</span> <span class="n">lws</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span> <span class="o">=</span> <span class="n">irreps</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Structure : Crystal structure.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_struct</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;numpy.ndarray : Phonon frequencies (shape: `(3N,)`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np_readonly_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigenvectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;numpy.ndarray : Phonon eigenvectors (shape: `(3N, N, 3)`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np_readonly_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">linewidths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;numpy.ndarray or None : Phonon linewidths (shape: `(3N,)`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np_readonly_view</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lws</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int : Number of modes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_linewidths</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;bool : `True` if linewidths are available, otherwise `False`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_irreps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;bool : `True` if irredicuble representations (irreps) are</span>
+<span class="sd">        available, otherwise `False`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">irreps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Irreps or None : `Irreps` object with the point group and</span>
+<span class="sd">        irrep symbols and indices of band groups.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_acoustic_mode_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the band indices of the acoustic modes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        band_inds : numpy.ndarray</span>
+<span class="sd">            Band indices of the acoustic modes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># If we have irreps, select irrep group(s) for which the</span>
+        <span class="c1"># average frequency is closest to f = 0 until we have chosen</span>
+        <span class="c1"># sufficient groups to cover three modes.</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ir_ave_freqs</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="p">[</span><span class="n">band_inds</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">band_inds</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span><span class="o">.</span><span class="n">irrep_band_indices</span>
+            <span class="p">]</span>
+
+            <span class="n">subset_band_inds</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">band_inds</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="nb">zip</span><span class="p">(</span><span class="n">ir_ave_freqs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span><span class="o">.</span><span class="n">irrep_band_indices</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">subset_band_inds</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">band_inds</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subset_band_inds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">subset_band_inds</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Unable to select a set of acoustic modes spanning &quot;</span>
+                <span class="s2">&quot;complete irrep groups. This may indicate an issue &quot;</span>
+                <span class="s2">&quot;with the phonon calculation.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># If not, find the three modes with frequencies closest to</span>
+        <span class="c1"># f = 0.</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="p">))[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigendisplacements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the phonon eigendisplacements (eigenvectors divided</span>
+<span class="sd">        by sqrt(mass)).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        edisps : numpy.ndarray</span>
+<span class="sd">            Eigendisplacements (shape: `(3N, N, 3)`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">sqrt_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_struct</span><span class="o">.</span><span class="n">atomic_masses</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span> <span class="o">/</span> <span class="n">sqrt_m</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the Hessian matrix (force constants) for the</span>
+<span class="sd">        Gamma-point phonon modes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        h : numpy.ndarray</span>
+<span class="sd">            Hessian in eV / Ang^2 (shape: `(3N, 3N)`).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This function requires the `phonopy` package.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_PHONOPY_AVAILABLE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;GammaPhonons.hessian() requires the &quot;</span>
+                <span class="s2">&quot;phonopy.Phonopy and phonopy.phonon.DynmatToFc class.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">n_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_struct</span><span class="o">.</span><span class="n">num_atoms</span>
+
+        <span class="n">evals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copysign</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span> <span class="o">/</span> <span class="n">VASP_TO_THZ</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="p">)</span>
+
+        <span class="n">evec_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">evec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span><span class="p">):</span>
+            <span class="n">evec_mat</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="o">=</span> <span class="n">evec</span><span class="o">.</span><span class="n">flat</span>
+
+        <span class="c1"># Construct a Phonopy object to obtain the primitive cell and</span>
+        <span class="c1"># &quot;supercell&quot;.</span>
+
+        <span class="n">phonopy</span> <span class="o">=</span> <span class="n">Phonopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_struct</span><span class="o">.</span><span class="n">to_phonopy_atoms</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># Construct a DynmatToForceConstants object to reverse transform</span>
+        <span class="c1"># the dynamical matrix to the corresponding force constants.</span>
+
+        <span class="n">d2f</span> <span class="o">=</span> <span class="n">DynmatToForceConstants</span><span class="p">(</span><span class="n">phonopy</span><span class="o">.</span><span class="n">primitive</span><span class="p">,</span> <span class="n">phonopy</span><span class="o">.</span><span class="n">supercell</span><span class="p">)</span>
+
+        <span class="n">d2f</span><span class="o">.</span><span class="n">create_dynamical_matrices</span><span class="p">(</span>
+            <span class="n">eigenvalues</span><span class="o">=</span><span class="p">[</span><span class="n">evals</span><span class="p">],</span> <span class="n">eigenvectors</span><span class="o">=</span><span class="p">[</span><span class="n">evec_mat</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">d2f</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+        <span class="n">fc2</span> <span class="o">=</span> <span class="n">d2f</span><span class="o">.</span><span class="n">force_constants</span>
+
+        <span class="c1"># &quot;Flatten&quot; fc2 to a (3 n_a) x (3 n_a) matrix.</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i_at</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a</span><span class="p">):</span>
+            <span class="n">i_fc2</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">i_at</span>
+
+            <span class="k">for</span> <span class="n">j_at</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a</span><span class="p">):</span>
+                <span class="n">j_fc2</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">j_at</span>
+
+                <span class="n">h</span><span class="p">[</span><span class="n">i_fc2</span> <span class="p">:</span> <span class="n">i_fc2</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="n">j_fc2</span> <span class="p">:</span> <span class="n">j_fc2</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">fc2</span><span class="p">[</span><span class="n">i_at</span><span class="p">,</span> <span class="n">j_at</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">h</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the internal data as a dictionary of native Python</span>
+<span class="sd">        types for serialisation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        d : dict</span>
+<span class="sd">            Dictionary structure containing internal data as native</span>
+<span class="sd">            Python types.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">lws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lws</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">irreps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;structure&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_struct</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+            <span class="s2">&quot;frequencies&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">&quot;eigenvectors&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s2">&quot;linewidths&quot;</span><span class="p">:</span> <span class="n">lws</span><span class="p">,</span>
+            <span class="s2">&quot;irreps&quot;</span><span class="p">:</span> <span class="n">irreps</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new `GammaPhonons` instance from a dictionary</span>
+<span class="sd">        generated by `GammaPhonons.to_dict()`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        d : dict</span>
+<span class="sd">            Dictionary generated by `to_dict()`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        gamma_phonons : GammaPhonons</span>
+<span class="sd">            `GammaPhonons` object constructed from the data in `d`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">irreps</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;irreps&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">irreps</span> <span class="o">=</span> <span class="n">Irreps</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;irreps&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">GammaPhonons</span><span class="p">(</span>
+            <span class="n">Structure</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;structure&quot;</span><span class="p">]),</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">],</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">&quot;eigenvectors&quot;</span><span class="p">],</span>
+            <span class="n">lws</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;linewidths&quot;</span><span class="p">],</span>
+            <span class="n">irreps</span><span class="o">=</span><span class="n">irreps</span><span class="p">,</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.eigenvectors" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">eigenvectors</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>numpy.ndarray : Phonon eigenvectors (shape: <code>(3N, N, 3)</code>).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.frequencies" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">frequencies</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>numpy.ndarray : Phonon frequencies (shape: <code>(3N,)</code>).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.has_irreps" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">has_irreps</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>bool : <code>True</code> if irredicuble representations (irreps) are
+available, otherwise <code>False</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.has_linewidths" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">has_linewidths</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>bool : <code>True</code> if linewidths are available, otherwise <code>False</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.irreps" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">irreps</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Irreps or None : <code>Irreps</code> object with the point group and
+irrep symbols and indices of band groups.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.linewidths" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">linewidths</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>numpy.ndarray or None : Phonon linewidths (shape: <code>(3N,)</code>).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.num_modes" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">num_modes</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>int : Number of modes.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.structure" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">structure</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Structure : Crystal structure.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">struct</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">evecs</span><span class="p">,</span> <span class="n">lws</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">irreps</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a new instance of the <code>GammaPhonons</code> class.</p>
+<h5 id="phonopy_spectroscopy.phonon.GammaPhonons.__init__--parameters">Parameters</h5>
+<p>struct : Structure
+    Crystal structure.
+freqs : array_like
+    Phonon frequencies in THz (shape: <code>(3N,)</code>).
+evecs : array_like
+    Phonon eigenvectors in mass-weighted units of sqrt(amu)
+    (shape: <code>(3N, N, 3)</code>).
+lws : array_like or None, optional
+    Phonon linewidths in THz (shape: <code>(3N,)</code>) or <code>None</code>.
+irreps : Irreps or None, optional
+    <code>Irreps</code> object specifying the point group and assigning
+    bands to irrep groups.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>lib/phonopy_spectroscopy/phonon.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">evecs</span><span class="p">,</span> <span class="n">lws</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">irreps</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a new instance of the `GammaPhonons` class.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    struct : Structure</span>
+<span class="sd">        Crystal structure.</span>
+<span class="sd">    freqs : array_like</span>
+<span class="sd">        Phonon frequencies in THz (shape: `(3N,)`).</span>
+<span class="sd">    evecs : array_like</span>
+<span class="sd">        Phonon eigenvectors in mass-weighted units of sqrt(amu)</span>
+<span class="sd">        (shape: `(3N, N, 3)`).</span>
+<span class="sd">    lws : array_like or None, optional</span>
+<span class="sd">        Phonon linewidths in THz (shape: `(3N,)`) or `None`.</span>
+<span class="sd">    irreps : Irreps or None, optional</span>
+<span class="sd">        `Irreps` object specifying the point group and assigning</span>
+<span class="sd">        bands to irrep groups.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n_a</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">num_atoms</span>
+
+    <span class="k">if</span> <span class="n">n_a</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;struct cannot be &quot;empty&quot; and must contain at least one atom.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np_asarray_copy</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np_check_shape</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;freqs must be an array_like with shape (3N,).&quot;</span><span class="p">)</span>
+
+    <span class="n">evecs</span> <span class="o">=</span> <span class="n">np_asarray_copy</span><span class="p">(</span><span class="n">evecs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np_check_shape</span><span class="p">(</span><span class="n">evecs</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,</span> <span class="n">n_a</span><span class="p">,</span> <span class="mi">3</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;evecs must be an array_like with shape (3N, N, 3).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Eigenvectors are in general complex, but Gamma-point</span>
+    <span class="c1"># eigenvectors must be real.</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplex</span><span class="p">(</span><span class="n">evecs</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">evecs</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ZERO_TOLERANCE</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Gamma-point eigenvectors should be real.&quot;</span><span class="p">)</span>
+
+        <span class="n">evecs</span> <span class="o">=</span> <span class="n">evecs</span><span class="o">.</span><span class="n">real</span>
+
+    <span class="k">if</span> <span class="n">lws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lws</span> <span class="o">=</span> <span class="n">np_asarray_copy</span><span class="p">(</span><span class="n">lws</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np_check_shape</span><span class="p">(</span><span class="n">lws</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;If supplied, lws must be an array_like with shape (3N,).&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">lws</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Linewidths cannot be negative.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">irreps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ir_band_inds_flat</span> <span class="o">=</span> <span class="n">irreps</span><span class="o">.</span><span class="n">band_indices_flat</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ir_band_inds_flat</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;If supplied, irreps must assign all bands to &quot;</span>
+                <span class="s2">&quot;irrep groups.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ir_band_inds_flat</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;One or more band indices in irreps are not &quot;</span>
+                <span class="s2">&quot;compatible with the number of modes in the &quot;</span>
+                <span class="s2">&quot;phonon calculation.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_struct</span> <span class="o">=</span> <span class="n">struct</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span> <span class="o">=</span> <span class="n">freqs</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span> <span class="o">=</span> <span class="n">evecs</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_lws</span> <span class="o">=</span> <span class="n">lws</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span> <span class="o">=</span> <span class="n">irreps</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.eigendisplacements" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">eigendisplacements</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the phonon eigendisplacements (eigenvectors divided
+by sqrt(mass)).</p>
+<h5 id="phonopy_spectroscopy.phonon.GammaPhonons.eigendisplacements--returns">Returns</h5>
+<p>edisps : numpy.ndarray
+    Eigendisplacements (shape: <code>(3N, N, 3)</code>).</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>lib/phonopy_spectroscopy/phonon.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">eigendisplacements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the phonon eigendisplacements (eigenvectors divided</span>
+<span class="sd">    by sqrt(mass)).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    edisps : numpy.ndarray</span>
+<span class="sd">        Eigendisplacements (shape: `(3N, N, 3)`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sqrt_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_struct</span><span class="o">.</span><span class="n">atomic_masses</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span> <span class="o">/</span> <span class="n">sqrt_m</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.from_dict" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create a new <code>GammaPhonons</code> instance from a dictionary
+generated by <code>GammaPhonons.to_dict()</code>.</p>
+<h5 id="phonopy_spectroscopy.phonon.GammaPhonons.from_dict--parameters">Parameters</h5>
+<p>d : dict
+    Dictionary generated by <code>to_dict()</code>.</p>
+<h5 id="phonopy_spectroscopy.phonon.GammaPhonons.from_dict--returns">Returns</h5>
+<p>gamma_phonons : GammaPhonons
+    <code>GammaPhonons</code> object constructed from the data in <code>d</code>.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>lib/phonopy_spectroscopy/phonon.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new `GammaPhonons` instance from a dictionary</span>
+<span class="sd">    generated by `GammaPhonons.to_dict()`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : dict</span>
+<span class="sd">        Dictionary generated by `to_dict()`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gamma_phonons : GammaPhonons</span>
+<span class="sd">        `GammaPhonons` object constructed from the data in `d`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">irreps</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;irreps&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">irreps</span> <span class="o">=</span> <span class="n">Irreps</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;irreps&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">GammaPhonons</span><span class="p">(</span>
+        <span class="n">Structure</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;structure&quot;</span><span class="p">]),</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">],</span>
+        <span class="n">d</span><span class="p">[</span><span class="s2">&quot;eigenvectors&quot;</span><span class="p">],</span>
+        <span class="n">lws</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;linewidths&quot;</span><span class="p">],</span>
+        <span class="n">irreps</span><span class="o">=</span><span class="n">irreps</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.get_acoustic_mode_indices" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_acoustic_mode_indices</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the band indices of the acoustic modes.</p>
+<h5 id="phonopy_spectroscopy.phonon.GammaPhonons.get_acoustic_mode_indices--returns">Returns</h5>
+<p>band_inds : numpy.ndarray
+    Band indices of the acoustic modes.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>lib/phonopy_spectroscopy/phonon.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_acoustic_mode_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the band indices of the acoustic modes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    band_inds : numpy.ndarray</span>
+<span class="sd">        Band indices of the acoustic modes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># If we have irreps, select irrep group(s) for which the</span>
+    <span class="c1"># average frequency is closest to f = 0 until we have chosen</span>
+    <span class="c1"># sufficient groups to cover three modes.</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ir_ave_freqs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="p">[</span><span class="n">band_inds</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">band_inds</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span><span class="o">.</span><span class="n">irrep_band_indices</span>
+        <span class="p">]</span>
+
+        <span class="n">subset_band_inds</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">band_inds</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="n">ir_ave_freqs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span><span class="o">.</span><span class="n">irrep_band_indices</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">subset_band_inds</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">band_inds</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subset_band_inds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">subset_band_inds</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Unable to select a set of acoustic modes spanning &quot;</span>
+            <span class="s2">&quot;complete irrep groups. This may indicate an issue &quot;</span>
+            <span class="s2">&quot;with the phonon calculation.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># If not, find the three modes with frequencies closest to</span>
+    <span class="c1"># f = 0.</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="p">))[:</span><span class="mi">3</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.hessian" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">hessian</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the Hessian matrix (force constants) for the
+Gamma-point phonon modes.</p>
+<h5 id="phonopy_spectroscopy.phonon.GammaPhonons.hessian--returns">Returns</h5>
+<p>h : numpy.ndarray
+    Hessian in eV / Ang^2 (shape: <code>(3N, 3N)</code>).</p>
+<h5 id="phonopy_spectroscopy.phonon.GammaPhonons.hessian--notes">Notes</h5>
+<p>This function requires the <code>phonopy</code> package.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>lib/phonopy_spectroscopy/phonon.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the Hessian matrix (force constants) for the</span>
+<span class="sd">    Gamma-point phonon modes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    h : numpy.ndarray</span>
+<span class="sd">        Hessian in eV / Ang^2 (shape: `(3N, 3N)`).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function requires the `phonopy` package.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_PHONOPY_AVAILABLE</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;GammaPhonons.hessian() requires the &quot;</span>
+            <span class="s2">&quot;phonopy.Phonopy and phonopy.phonon.DynmatToFc class.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">n_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_struct</span><span class="o">.</span><span class="n">num_atoms</span>
+
+    <span class="n">evals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copysign</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span> <span class="o">/</span> <span class="n">VASP_TO_THZ</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="p">)</span>
+
+    <span class="n">evec_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">evec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span><span class="p">):</span>
+        <span class="n">evec_mat</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="o">=</span> <span class="n">evec</span><span class="o">.</span><span class="n">flat</span>
+
+    <span class="c1"># Construct a Phonopy object to obtain the primitive cell and</span>
+    <span class="c1"># &quot;supercell&quot;.</span>
+
+    <span class="n">phonopy</span> <span class="o">=</span> <span class="n">Phonopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_struct</span><span class="o">.</span><span class="n">to_phonopy_atoms</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="c1"># Construct a DynmatToForceConstants object to reverse transform</span>
+    <span class="c1"># the dynamical matrix to the corresponding force constants.</span>
+
+    <span class="n">d2f</span> <span class="o">=</span> <span class="n">DynmatToForceConstants</span><span class="p">(</span><span class="n">phonopy</span><span class="o">.</span><span class="n">primitive</span><span class="p">,</span> <span class="n">phonopy</span><span class="o">.</span><span class="n">supercell</span><span class="p">)</span>
+
+    <span class="n">d2f</span><span class="o">.</span><span class="n">create_dynamical_matrices</span><span class="p">(</span>
+        <span class="n">eigenvalues</span><span class="o">=</span><span class="p">[</span><span class="n">evals</span><span class="p">],</span> <span class="n">eigenvectors</span><span class="o">=</span><span class="p">[</span><span class="n">evec_mat</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">d2f</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="n">fc2</span> <span class="o">=</span> <span class="n">d2f</span><span class="o">.</span><span class="n">force_constants</span>
+
+    <span class="c1"># &quot;Flatten&quot; fc2 to a (3 n_a) x (3 n_a) matrix.</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_a</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i_at</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a</span><span class="p">):</span>
+        <span class="n">i_fc2</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">i_at</span>
+
+        <span class="k">for</span> <span class="n">j_at</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_a</span><span class="p">):</span>
+            <span class="n">j_fc2</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">j_at</span>
+
+            <span class="n">h</span><span class="p">[</span><span class="n">i_fc2</span> <span class="p">:</span> <span class="n">i_fc2</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="n">j_fc2</span> <span class="p">:</span> <span class="n">j_fc2</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">fc2</span><span class="p">[</span><span class="n">i_at</span><span class="p">,</span> <span class="n">j_at</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">h</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="phonopy_spectroscopy.phonon.GammaPhonons.to_dict" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">to_dict</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the internal data as a dictionary of native Python
+types for serialisation.</p>
+<h5 id="phonopy_spectroscopy.phonon.GammaPhonons.to_dict--returns">Returns</h5>
+<p>d : dict
+    Dictionary structure containing internal data as native
+    Python types.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>lib/phonopy_spectroscopy/phonon.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the internal data as a dictionary of native Python</span>
+<span class="sd">    types for serialisation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    d : dict</span>
+<span class="sd">        Dictionary structure containing internal data as native</span>
+<span class="sd">        Python types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lws</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">irreps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_irreps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;structure&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_struct</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+        <span class="s2">&quot;frequencies&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_freqs</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;eigenvectors&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evecs</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;linewidths&quot;</span><span class="p">:</span> <span class="n">lws</span><span class="p">,</span>
+        <span class="s2">&quot;irreps&quot;</span><span class="p">:</span> <span class="n">irreps</span><span class="p">,</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
